@@ -1,0 +1,1150 @@
+<!doctype html>
+<html lang="nb">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="description" content="Interaktivt kurs om passkeys for Windows 11-brukere i Microsoft 365.">
+<style>:root{color-scheme:light}body{margin:0}img{max-width:100%}[hidden]{display:none!important}</style>
+<title>Passkey-skolen</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:ital,wght@0,400;0,700;1,400&family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700;12..96,800&family=JetBrains+Mono:wght@400;600&display=swap">
+<style>
+/* Layout: kurskart til venstre (nivåer + leksjoner med låsestatus), leksjonsflate til høyre. Stables på mobil. */
+:root{
+  --bg:#eef1f5; --surface:#ffffff; --surface-2:#f6f8fb; --ink:#132030; --muted:#566376; --line:#d5dce6;
+  --accent:#0b5cad; --accent-soft:#e3eefa; --key:#b87712; --key-soft:#fbf1df;
+  --ok:#1d7447; --ok-soft:#e2f3ea; --bad:#b3261e; --bad-soft:#fbe7e5;
+  --f-display:"Bricolage Grotesque", "Segoe UI", system-ui, sans-serif;
+  --f-body:"Atkinson Hyperlegible", "Segoe UI", system-ui, sans-serif;
+  --f-mono:"JetBrains Mono", ui-monospace, Consolas, monospace;
+  --r:10px;
+}
+@media (prefers-color-scheme: dark){ :root:not([data-theme="light"]){
+  --bg:#0d131a; --surface:#151e28; --surface-2:#1b2632; --ink:#e5ebf2; --muted:#9aa8b8; --line:#2a3847;
+  --accent:#72b3ff; --accent-soft:#16304c; --key:#e8ae4a; --key-soft:#3a2c14;
+  --ok:#5cc990; --ok-soft:#133426; --bad:#ff8f86; --bad-soft:#3d1b19; color-scheme:dark; } }
+:root[data-theme="dark"]{
+  --bg:#0d131a; --surface:#151e28; --surface-2:#1b2632; --ink:#e5ebf2; --muted:#9aa8b8; --line:#2a3847;
+  --accent:#72b3ff; --accent-soft:#16304c; --key:#e8ae4a; --key-soft:#3a2c14;
+  --ok:#5cc990; --ok-soft:#133426; --bad:#ff8f86; --bad-soft:#3d1b19; color-scheme:dark; }
+
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--ink);font-family:var(--f-body);font-size:17px;line-height:1.6}
+a{color:var(--accent)}
+:focus-visible{outline:3px solid var(--accent);outline-offset:2px;border-radius:4px}
+h1,h2,h3{font-family:var(--f-display);line-height:1.15;text-wrap:balance;margin:0}
+code,kbd,.mono{font-family:var(--f-mono);font-size:.86em}
+code{background:var(--surface-2);border:1px solid var(--line);padding:.05em .35em;border-radius:5px;overflow-wrap:anywhere}
+kbd{border:1px solid var(--line);border-bottom-width:2px;padding:.05em .4em;border-radius:5px;background:var(--surface)}
+
+.wrap{max-width:1180px;margin:0 auto;padding-inline:16px;padding-block:0 48px}
+header.top{padding-block:28px 20px;display:flex;flex-wrap:wrap;gap:16px 32px;align-items:end;justify-content:space-between}
+.brand{display:flex;gap:14px;align-items:center}
+.brand svg{flex:none}
+.brand h1{font-size:clamp(1.7rem,3.5vw,2.4rem);font-weight:800;letter-spacing:-.02em}
+.brand p{margin:2px 0 0;color:var(--muted);font-size:.95rem}
+.progress{min-width:min(320px,100%);flex:1;max-width:420px}
+.progress .lbl{display:flex;justify-content:space-between;font-size:.82rem;color:var(--muted);text-transform:uppercase;letter-spacing:.06em;margin-bottom:6px}
+.bar{height:10px;background:var(--line);border-radius:99px;overflow:hidden}
+.bar i{display:block;height:100%;background:linear-gradient(90deg,var(--accent),var(--key));width:0;transition:width .5s ease}
+
+.grid{display:grid;grid-template-columns:290px minmax(0,1fr);gap:28px;align-items:start}
+@media (max-width:880px){.grid{grid-template-columns:minmax(0,1fr)}}
+
+/* Kurskart */
+nav.map{position:sticky;top:calc(env(safe-area-inset-top,0px) + 16px);background:var(--surface);border:1px solid var(--line);border-radius:var(--r);padding:14px;max-height:calc(100vh - 32px);overflow:auto}
+@media (max-width:880px){nav.map{position:static;max-height:none}}
+.map details{border-bottom:1px solid var(--line);padding-block:6px}
+.map details:last-of-type{border-bottom:0}
+.map summary{cursor:pointer;list-style:none;display:flex;gap:10px;align-items:center;padding:6px 4px;font-family:var(--f-display);font-weight:700;font-size:1rem}
+.map summary::-webkit-details-marker{display:none}
+.lvl-badge{font-family:var(--f-mono);font-size:.72rem;font-weight:600;background:var(--key-soft);color:var(--key);border-radius:6px;padding:2px 7px;flex:none}
+.map ol{list-style:none;margin:2px 0 6px;padding:0;display:grid;gap:2px}
+.map button.ls{all:unset;box-sizing:border-box;width:100%;display:flex;gap:10px;align-items:center;padding:7px 8px;border-radius:7px;cursor:pointer;font-size:.93rem;line-height:1.3}
+.map button.ls:hover{background:var(--surface-2)}
+.map button.ls:focus-visible{outline:2px solid var(--accent)}
+.map button.ls[aria-current="true"]{background:var(--accent-soft);font-weight:700}
+.map button.ls[data-state="locked"]{color:var(--muted);cursor:not-allowed}
+.dot{width:20px;height:20px;border-radius:50%;flex:none;display:grid;place-items:center;border:2px solid var(--line);font-size:.7rem}
+[data-state="done"] .dot{background:var(--ok);border-color:var(--ok);color:var(--surface)}
+[data-state="open"] .dot{border-color:var(--accent)}
+.map .tools{display:grid;gap:8px;margin-top:12px;padding-top:12px;border-top:1px solid var(--line)}
+.map .tools label{display:flex;gap:8px;align-items:center;font-size:.86rem;color:var(--muted);cursor:pointer}
+.linkbtn{all:unset;cursor:pointer;color:var(--muted);font-size:.86rem;text-decoration:underline;text-underline-offset:3px}
+.linkbtn:focus-visible{outline:2px solid var(--accent)}
+
+/* Leksjon */
+main.lesson{background:var(--surface);border:1px solid var(--line);border-radius:var(--r);padding:clamp(20px,4vw,44px);min-width:0}
+.eyebrow{font-family:var(--f-mono);font-size:.78rem;letter-spacing:.06em;text-transform:uppercase;color:var(--key);margin-bottom:10px}
+main.lesson h2{font-size:clamp(1.6rem,3.2vw,2.3rem);font-weight:800;letter-spacing:-.015em;margin-bottom:6px}
+.lede{font-size:1.12rem;color:var(--muted);margin:0 0 22px;max-width:62ch}
+.content{max-width:68ch}
+.content h3{font-size:1.2rem;margin:28px 0 8px}
+.content p{margin:0 0 14px}
+.content ul,.content ol{margin:0 0 14px;padding-left:1.3em}
+.content li{margin-bottom:6px}
+.note{border:1px solid var(--line);background:var(--surface-2);border-radius:8px;padding:14px 16px;margin:18px 0}
+.note.key{background:var(--key-soft);border-color:color-mix(in srgb,var(--key) 40%,transparent)}
+.note strong:first-child{display:block;font-family:var(--f-display);margin-bottom:4px}
+.steps{counter-reset:s;list-style:none;padding:0!important}
+.steps li{counter-increment:s;position:relative;padding-left:40px;margin-bottom:12px}
+.steps li::before{content:counter(s);position:absolute;left:0;top:0;width:28px;height:28px;border-radius:50%;background:var(--accent);color:var(--surface);font-family:var(--f-mono);font-weight:600;font-size:.85rem;display:grid;place-items:center}
+.path{font-family:var(--f-mono);font-size:.86em;background:var(--accent-soft);color:var(--ink);padding:.1em .45em;border-radius:5px;overflow-wrap:anywhere}
+.tablewrap{overflow-x:auto;margin:16px 0;border:1px solid var(--line);border-radius:8px}
+table{border-collapse:collapse;width:100%;min-width:640px;font-size:.92rem}
+th,td{text-align:left;padding:9px 12px;border-bottom:1px solid var(--line);vertical-align:top}
+th{background:var(--surface-2);font-family:var(--f-display);font-weight:700}
+tr:last-child td{border-bottom:0}
+.pill{display:inline-block;font-size:.78rem;font-weight:700;padding:1px 8px;border-radius:99px}
+.pill.g{background:var(--ok-soft);color:var(--ok)} .pill.y{background:var(--key-soft);color:var(--key)} .pill.r{background:var(--bad-soft);color:var(--bad)}
+figure{margin:20px 0}
+figure svg{width:100%;height:auto;max-width:640px;display:block}
+figcaption{font-size:.88rem;color:var(--muted);margin-top:6px}
+.svg-ink{fill:none;stroke:var(--ink);stroke-width:2}
+.svg-fill{fill:var(--surface-2);stroke:var(--line);stroke-width:1.5}
+.svg-key{fill:var(--key)} .svg-acc{fill:var(--accent)} .svg-txt{fill:var(--ink);font-family:var(--f-body);font-size:13px} .svg-mut{fill:var(--muted);font-family:var(--f-mono);font-size:11px}
+.svg-line{stroke:var(--accent);stroke-width:2;fill:none} .svg-line-k{stroke:var(--key);stroke-width:2;fill:none}
+.pc-mock{border:1px solid var(--line);border-radius:10px;background:var(--surface-2);padding:18px;max-width:420px;margin:18px 0}
+.pc-mock .win{background:var(--surface);border:1px solid var(--line);border-radius:8px;padding:16px;box-shadow:0 8px 24px color-mix(in srgb,var(--ink) 10%,transparent)}
+.pc-mock .t{font-size:.8rem;color:var(--muted);margin-bottom:6px}
+.pc-mock .h{font-family:var(--f-display);font-weight:700;font-size:1.05rem;margin-bottom:10px}
+.pc-mock .pin{display:flex;gap:8px;margin:10px 0}
+.pc-mock .pin span{width:34px;height:40px;border:1px solid var(--line);border-radius:6px;display:grid;place-items:center;font-size:1.2rem}
+.pc-mock .opt{font-size:.85rem;color:var(--accent)}
+
+/* Sjekkpunkt og quiz */
+.check{margin-top:34px;border-top:2px dashed var(--line);padding-top:24px}
+.check h3{font-size:1.25rem;margin-bottom:6px}
+.check p.sub{color:var(--muted);margin:0 0 14px}
+.row{display:flex;flex-wrap:wrap;gap:10px}
+.btn{font:inherit;font-weight:700;border:2px solid var(--accent);background:var(--accent);color:var(--surface);padding:9px 18px;border-radius:8px;cursor:pointer}
+.btn.ghost{background:transparent;color:var(--accent)}
+.btn.key{border-color:var(--key);background:var(--key);color:var(--surface)}
+.btn:disabled{opacity:.45;cursor:not-allowed}
+.btn:hover:not(:disabled){filter:brightness(1.08)}
+.alt{margin-top:18px;background:var(--accent-soft);border-radius:8px;padding:16px 18px}
+.alt strong:first-child{font-family:var(--f-display);display:block;margin-bottom:4px}
+.alt p:last-child{margin-bottom:0}
+.quiz{margin-top:20px;display:grid;gap:18px}
+.q{border:1px solid var(--line);border-radius:8px;padding:16px}
+.q .qt{font-weight:700;margin-bottom:10px}
+.q .opts{display:grid;gap:8px}
+.q button.o{font:inherit;text-align:left;border:1.5px solid var(--line);background:var(--surface);color:var(--ink);padding:9px 12px;border-radius:7px;cursor:pointer;line-height:1.4}
+.q button.o:hover:not(:disabled){border-color:var(--accent)}
+.q button.o.right{border-color:var(--ok);background:var(--ok-soft)}
+.q button.o.wrong{border-color:var(--bad);background:var(--bad-soft)}
+.q button.o:disabled{cursor:default}
+.fb{margin-top:10px;font-size:.93rem;padding:10px 12px;border-radius:7px}
+.fb.ok{background:var(--ok-soft)} .fb.no{background:var(--bad-soft)}
+.done-banner{margin-top:22px;display:flex;flex-wrap:wrap;gap:12px 20px;align-items:center;justify-content:space-between;background:var(--ok-soft);border-radius:8px;padding:14px 18px}
+.done-banner b{color:var(--ok)}
+.pager{display:flex;justify-content:space-between;gap:10px;margin-top:30px;flex-wrap:wrap}
+
+/* Veileder */
+.wiz{border:1px solid var(--line);border-radius:10px;padding:18px;margin:18px 0;background:var(--surface-2)}
+.wiz fieldset{border:0;padding:0;margin:0 0 14px}
+.wiz legend{font-weight:700;margin-bottom:6px}
+.wiz label{display:flex;gap:8px;align-items:center;margin:4px 0;cursor:pointer}
+.wiz .res{margin-top:12px;background:var(--surface);border:1px solid var(--line);border-radius:8px;padding:14px 16px}
+.wiz .res h4{margin:0 0 6px;font-family:var(--f-display);font-size:1.05rem}
+.wiz .res ul{margin:0;padding-left:1.2em}
+
+.disclaimer-bar{margin:0 0 20px;padding:10px 14px;border:1px solid var(--line);border-radius:8px;background:var(--key-soft);font-size:.9rem}
+.site-foot{margin-top:36px;padding-top:20px;border-top:1px solid var(--line);color:var(--muted);font-size:.9rem;max-width:80ch}
+.site-foot h2{font-size:1.05rem;color:var(--ink);margin-bottom:8px}
+.site-foot p{margin:0 0 10px}
+@media (prefers-reduced-motion: reduce){*{transition:none!important;animation:none!important}}
+@keyframes rise{from{opacity:.4;transform:translateY(6px)}to{opacity:1;transform:none}}
+main.lesson.anim{animation:rise .35s ease}
+</style>
+</head>
+<body>
+
+<div class="wrap">
+  <header class="top">
+    <div class="brand">
+      <svg width="46" height="46" viewBox="0 0 46 46" aria-hidden="true">
+        <rect x="1" y="1" width="44" height="44" rx="11" fill="var(--accent)"/>
+        <circle cx="17" cy="20" r="7" fill="none" stroke="var(--surface)" stroke-width="3.2"/>
+        <path d="M22 24 L34 34 M29 29.5 L32 26.5 M32.5 32.5 L35.5 29.5" stroke="var(--key)" stroke-width="3.2" stroke-linecap="round"/>
+      </svg>
+      <div>
+        <h1>Passkey-skolen</h1>
+        <p>Passkeys for Windows 11-brukere i Microsoft 365, steg for steg</p>
+      </div>
+    </div>
+    <div class="progress" aria-live="polite">
+      <div class="lbl"><span>Din fremdrift</span><span id="progTxt">0 av 17</span></div>
+      <div class="bar"><i id="progBar"></i></div>
+    </div>
+  </header>
+
+  <p class="disclaimer-bar" role="note"><b>Merk:</b> Dette er generell veiledning, ikke offisiell dokumentasjon fra Microsoft. Bruk av informasjonen skjer på eget ansvar. <a href="#ansvar">Les mer</a></p>
+
+  <div class="grid">
+    <nav class="map" aria-label="Kurskart" id="map"></nav>
+    <main class="lesson" id="lesson" tabindex="-1"></main>
+  </div>
+
+  <footer class="site-foot" id="ansvar">
+    <h2>Ansvarsfraskrivelse</h2>
+    <p>Innholdet i Passkey-skolen er generell informasjon til opplæring. Det er ikke offisiell dokumentasjon fra Microsoft, Apple, Google eller andre leverandører, og det er ikke tilknyttet eller godkjent av dem.</p>
+    <p>Menynavn, innstillinger, funksjoner og anbefalinger endres ofte, og kan variere mellom versjoner, språk og organisasjoner. Noe av innholdet beskriver funksjoner som kan være i forhåndsversjon. Kontroller alltid mot oppdatert dokumentasjon fra leverandøren (for eksempel Microsoft Learn) og mot organisasjonens egne retningslinjer før du gjør endringer.</p>
+    <p>All bruk av informasjonen skjer på eget ansvar. Forfatteren tar ikke ansvar for tap av tilgang, datatap, sikkerhetshendelser eller andre konsekvenser av at informasjonen brukes. Er du i tvil, kontakt IT-avdelingen din før du endrer innloggingsmetoder.</p>
+  </footer>
+</div>
+
+<script>
+const LEVELS = [
+  {n:1, name:"Grunnleggende", sub:"Hva, hvordan og hvorfor"},
+  {n:2, name:"Hvor lagres passkeyen?", sub:"PC, mobil, nøkkel, passordbehandler"},
+  {n:3, name:"Microsoft 365 i praksis", sub:"Jobbkontoen på Windows 11"},
+  {n:4, name:"Avansert og for IT", sub:"Entra ID, policy, feilsøking"}
+];
+
+const L = [];
+const add = o => L.push(o);
+
+/* ===================== NIVÅ 1 ===================== */
+add({id:"hva", lvl:1, title:"Hva er en passkey?",
+lede:"En passkey er en innlogging uten passord. Du bruker det samme du bruker for å låse opp PC-en eller mobilen: ansikt, fingeravtrykk eller PIN.",
+body:`
+<p>Tenk på hvordan du logger inn i dag: du skriver et passord, og kanskje bekrefter du i en app på mobilen etterpå. Med en passkey forsvinner passordet. Du blir bedt om å <strong>bekrefte at det er deg</strong> på enheten du sitter med, og så er du inne.</p>
+<h3>Det enkleste bildet: lås og nøkkel</h3>
+<p>Når du lager en passkey for en tjeneste, skjer dette:</p>
+<ul>
+  <li>Tjenesten (for eksempel Microsoft 365) får en <strong>lås</strong>. Den kan bare åpnes av én bestemt nøkkel.</li>
+  <li>Du får <strong>nøkkelen</strong>. Den ligger trygt på enheten din (PC, mobil eller en fysisk nøkkel) og forlater den aldri.</li>
+  <li>Når du logger inn, beviser enheten at den har nøkkelen. Du bekrefter med ansikt, finger eller PIN at det er du som bruker den.</li>
+</ul>
+<figure>
+<svg viewBox="0 0 640 210" role="img" aria-label="Enheten din har den private nøkkelen, tjenesten har bare den offentlige låsen">
+  <rect x="20" y="30" width="230" height="150" rx="12" class="svg-fill"/>
+  <text x="40" y="60" class="svg-txt" font-weight="700">Din enhet</text>
+  <text x="40" y="80" class="svg-mut">PC, mobil eller sikkerhetsnøkkel</text>
+  <circle cx="80" cy="130" r="16" fill="none" stroke="var(--key)" stroke-width="5"/>
+  <path d="M94 138 L150 160 M130 152 L136 140 M144 157 L150 145" stroke="var(--key)" stroke-width="5" stroke-linecap="round"/>
+  <text x="170" y="136" class="svg-txt">Privat</text><text x="170" y="152" class="svg-txt">nøkkel</text>
+  <rect x="390" y="30" width="230" height="150" rx="12" class="svg-fill"/>
+  <text x="410" y="60" class="svg-txt" font-weight="700">Tjenesten</text>
+  <text x="410" y="80" class="svg-mut">f.eks. Microsoft 365</text>
+  <rect x="460" y="118" width="40" height="34" rx="5" class="svg-acc"/>
+  <path d="M468 118 v-10 a12 12 0 0 1 24 0 v10" fill="none" stroke="var(--accent)" stroke-width="5"/>
+  <text x="515" y="136" class="svg-txt">Offentlig</text><text x="515" y="152" class="svg-txt">«lås»</text>
+  <path d="M260 95 H380" class="svg-line" marker-end="url(#ah)"/>
+  <path d="M380 125 H260" class="svg-line-k" marker-end="url(#ahk)"/>
+  <text x="275" y="87" class="svg-mut">1. «Bevis det»</text>
+  <text x="270" y="145" class="svg-mut">2. Signert svar</text>
+  <defs>
+    <marker id="ah" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L10 5L0 10z" fill="var(--accent)"/></marker>
+    <marker id="ahk" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L10 5L0 10z" fill="var(--key)"/></marker>
+  </defs>
+</svg>
+<figcaption>Tjenesten lagrer bare «låsen». Nøkkelen blir værende hos deg.</figcaption>
+</figure>
+<div class="note key"><strong>Det viktigste å huske</strong>Det finnes ingen hemmelighet hos tjenesten som kan lekke. Og det finnes ingenting du kan skrive inn på en falsk nettside.</div>
+<h3>Hva heter det på norsk?</h3>
+<p>Du vil se flere navn: <em>passkey</em>, <em>tilgangsnøkkel</em> og <em>passnøkkel</em>. Det er samme ting. Windows og Microsoft-tjenester viser ofte engelsk «passkey» eller «tilgangsnøkkel», avhengig av språkversjon.</p>
+`,
+alt:`<strong>Forklart på en annen måte</strong>
+<p>Tenk på bankkortet ditt. Kortet alene er ikke nok, og PIN-koden alene er ikke nok. Du trenger begge. En passkey fungerer likt: <strong>enheten</strong> er «kortet», og <strong>ansiktet, fingeren eller PIN-en</strong> er det som låser det opp.</p>
+<p>Forskjellen fra bankkort er at PIN-en din aldri sendes noe sted. Den brukes bare lokalt, for å låse opp nøkkelen som ligger på enheten.</p>`,
+quiz:[
+ {q:"Hvor ligger den hemmelige delen av passkeyen din?",
+  o:["Hos Microsoft, kryptert","På enheten din (PC, mobil eller sikkerhetsnøkkel)","I e-posten din"], c:1,
+  e:"Den private nøkkelen blir på enheten. Tjenesten har bare den offentlige delen, som ikke kan brukes til å logge inn."},
+ {q:"Hva gjør du vanligvis når du logger inn med en passkey?",
+  o:["Skriver et langt passord","Bekrefter med ansikt, fingeravtrykk eller PIN","Venter på en SMS-kode"], c:1,
+  e:"Du bekrefter med det samme du bruker for å låse opp enheten. Det er alt."}
+]});
+
+add({id:"windows", lvl:1, title:"Slik ser det ut på Windows 11",
+lede:"På Windows 11 er det Windows Hello som dukker opp når du bruker en passkey. La oss se hvordan det faktisk oppleves.",
+body:`
+<p>Når en nettside eller app ber om passkey, åpner Windows et lite vindu fra <strong>Windows-sikkerhet</strong>. Det ser omtrent slik ut:</p>
+<div class="pc-mock" aria-hidden="true">
+  <div class="win">
+    <div class="t">Windows-sikkerhet</div>
+    <div class="h">Bekreft at det er deg</div>
+    <div style="font-size:.9rem">Logg på login.microsoft.com som <b>kari@firma.no</b></div>
+    <div class="pin"><span>•</span><span>•</span><span>•</span><span>•</span><span>•</span><span>•</span></div>
+    <div class="opt">Flere valg ▸</div>
+  </div>
+</div>
+<p>Du bekrefter med en av disse:</p>
+<ul>
+  <li><strong>Ansiktsgjenkjenning</strong> hvis PC-en har et Windows Hello-kamera (infrarødt kamera, ofte på bærbare jobb-PCer).</li>
+  <li><strong>Fingeravtrykk</strong> hvis PC-en har leser.</li>
+  <li><strong>PIN</strong>, som alltid fungerer som reserve.</li>
+</ul>
+<h3>«Flere valg»-knappen er viktig</h3>
+<p>Under <em>Flere valg</em> kan Windows tilby andre steder passkeyen kan ligge:</p>
+<ul>
+  <li><strong>iPhone, iPad eller Android-enhet</strong>: Windows viser en QR-kode som du skanner med mobilen.</li>
+  <li><strong>Sikkerhetsnøkkel</strong>: du setter inn en USB-nøkkel eller holder den mot NFC-leseren.</li>
+  <li><strong>En passordbehandler</strong> (1Password, Bitwarden o.l.) hvis den er koblet til Windows.</li>
+</ul>
+<p>Dette er grunnlaget for resten av kurset: passkeyen kan ligge <em>flere steder</em>, og Windows er «resepsjonen» som spør hvor du vil hente den fra.</p>
+<div class="note"><strong>Hvorfor PIN og ikke passord?</strong>PIN-en i Windows Hello er knyttet til akkurat denne PC-en. Hvis noen får vite PIN-en din, kan de ikke bruke den fra en annen PC. Et passord kan brukes fra hvor som helst i verden.</div>
+<h3>Se passkeyene som ligger på PC-en</h3>
+<p>Åpne <span class="path">Innstillinger → Kontoer → Passkeys</span> (kan hete <em>Tilgangsnøkler</em>). Der ser du passkeyene Windows Hello har lagret, og du kan slette dem du ikke trenger.</p>
+`,
+alt:`<strong>Forklart på en annen måte</strong>
+<p>Windows Hello er som dørvakten på PC-en. Når en nettside spør «har du nøkkelen?», spør dørvakten deg først: «Er det virkelig deg?» Du viser ansiktet, fingeren eller skriver PIN. Først da henter dørvakten nøkkelen og svarer nettsiden.</p>
+<p>Hvis nøkkelen ligger et annet sted, for eksempel på mobilen, peker dørvakten deg dit via <em>Flere valg</em>.</p>`,
+quiz:[
+ {q:"Du har en PC uten kamera og uten fingeravtrykksleser. Kan du bruke Windows Hello med passkey?",
+  o:["Nei, det krever ansiktsgjenkjenning","Ja, med Windows Hello-PIN","Bare hvis du kjøper en ny PC"], c:1,
+  e:"PIN fungerer alltid som metode i Windows Hello."},
+ {q:"Hvorfor er Windows Hello-PIN tryggere enn et passord?",
+  o:["Den er lengre","Den fungerer bare på den ene PC-en den er satt opp på","Den byttes automatisk hver dag"], c:1,
+  e:"PIN-en låser opp en nøkkel som ligger i PC-ens sikkerhetsbrikke (TPM). Den er verdiløs på en annen maskin."},
+ {q:"Hvor finner du passkeyene som er lagret i Windows?",
+  o:["Kontrollpanel → Brukerkontoer","Innstillinger → Kontoer → Passkeys","Microsoft Edge → Favoritter"], c:1,
+  e:"Innstillinger → Kontoer → Passkeys (eller Tilgangsnøkler på norsk)."}
+]});
+
+add({id:"hvorfor", lvl:1, title:"Hvorfor er det tryggere?",
+lede:"Passkeys stopper de vanligste angrepene mot M365-kontoer: phishing, lekkede passord og «MFA-tretthet».",
+body:`
+<h3>1. Kan ikke phishes</h3>
+<p>En passkey er låst til den ekte nettadressen. En passkey laget for <code>login.microsoftonline.com</code> virker bare der. Hvis du havner på <code>login-microsoft365.support</code> (falsk side), finner ikke Windows noen passkey for den adressen, og det skjer ingenting. Du <em>kan</em> ikke gi den bort, selv om du blir lurt.</p>
+<h3>2. Ingenting å lekke</h3>
+<p>Når en tjeneste blir hacket, lekker ofte passord. Med passkeys har tjenesten bare den offentlige «låsen». Den er ubrukelig for en angriper.</p>
+<h3>3. Ingen gjenbruk</h3>
+<p>Hver tjeneste får sin egen passkey. Det finnes ikke noe «samme passord overalt».</p>
+<h3>4. Ingen godkjenn-spam</h3>
+<p>Mange har opplevd å få varsler i Authenticator om å godkjenne innlogginger de ikke har startet. Angripere håper at du trykker «Godkjenn» for å bli kvitt maset. Med passkey må du være fysisk til stede ved enheten, og innloggingen starter der du sitter.</p>
+<div class="tablewrap"><table>
+<thead><tr><th>Angrep</th><th>Passord</th><th>Passord + SMS/app-varsel</th><th>Passkey</th></tr></thead>
+<tbody>
+<tr><td>Falsk innloggingsside (phishing)</td><td><span class="pill r">Sårbar</span></td><td><span class="pill r">Sårbar</span> (koden kan videresendes)</td><td><span class="pill g">Beskyttet</span></td></tr>
+<tr><td>Lekket passorddatabase</td><td><span class="pill r">Sårbar</span></td><td><span class="pill y">Delvis</span></td><td><span class="pill g">Beskyttet</span></td></tr>
+<tr><td>Godkjenn-spam (MFA-tretthet)</td><td>–</td><td><span class="pill r">Sårbar</span></td><td><span class="pill g">Beskyttet</span></td></tr>
+<tr><td>Noen kikker over skulderen</td><td><span class="pill r">Sårbar</span></td><td><span class="pill y">Delvis</span></td><td><span class="pill g">Beskyttet</span> (PIN er verdiløs uten enheten)</td></tr>
+</tbody></table></div>
+<p>Derfor kaller Microsoft passkeys <strong>phishing-resistent MFA</strong>. Du har <em>noe</em> (enheten) og <em>er</em> eller <em>vet</em> noe (ansikt, finger, PIN), i én og samme handling.</p>
+`,
+alt:`<strong>Forklart på en annen måte</strong>
+<p>Et passord er som å si et hemmelig ord høyt ved døren. Hvem som helst som hører det, kan si det samme ordet ved en annen dør.</p>
+<p>En passkey er som en nøkkel som bare passer i én dør. Står du foran en falsk dør, passer ikke nøkkelen. Du trenger ikke oppdage at døren er falsk selv, nøkkelen gjør det for deg.</p>`,
+quiz:[
+ {q:"Du klikker på en lenke i en e-post og havner på en falsk Microsoft-innloggingsside. Hva skjer med passkeyen?",
+  o:["Den blir stjålet","Den virker ikke der, fordi den er låst til den ekte adressen","Den sendes til angriperen sammen med PIN-en"], c:1,
+  e:"Passkeyen er knyttet til den ekte domenet. På en falsk side tilbys den ikke, og ingenting sendes."},
+ {q:"Hva betyr «phishing-resistent MFA»?",
+  o:["Innlogging som ikke kan lures fra deg via falske sider","MFA med SMS","En e-postfilter mot phishing"], c:0,
+  e:"Metoden kan ikke brukes mot en falsk side, selv om brukeren blir lurt."}
+]});
+
+/* ===================== NIVÅ 2 ===================== */
+add({id:"hello", lvl:2, title:"Lagring 1: Windows Hello på PC-en",
+lede:"Den enkleste varianten: passkeyen ligger i PC-ens sikkerhetsbrikke og låses opp med Windows Hello.",
+body:`
+<p>Når du lager en passkey og velger «denne enheten», havner den i Windows Hello. Nøkkelen beskyttes av <strong>TPM-brikken</strong> (Trusted Platform Module), som alle Windows 11-PCer har.</p>
+<h3>Fordeler</h3>
+<ul>
+  <li>Raskt og enkelt: ansikt eller finger, og du er inne.</li>
+  <li>Svært sikkert: nøkkelen kan ikke kopieres ut av TPM-brikken.</li>
+  <li>Krever ingen ekstra utstyr.</li>
+</ul>
+<h3>Ulemper</h3>
+<ul>
+  <li>Passkeyen er <strong>bundet til denne ene PC-en</strong>. Den følger ikke med til en ny PC eller til mobilen din.</li>
+  <li>Blir PC-en byttet, reinstallert eller stjålet, er passkeyen borte. Du må ha en annen innloggingsmetode i reserve.</li>
+</ul>
+<div class="note"><strong>Nytt i Windows 11</strong>Microsoft har begynt å gjøre det mulig å synkronisere passkeys mellom Windows-enheter for personlige Microsoft-kontoer, og å koble passordbehandlere direkte inn i Windows. Hva som er tilgjengelig avhenger av Windows-versjon og om PC-en styres av jobben. På jobb-PCer er det IT som bestemmer.</div>
+<h3>Prøv selv (privat konto)</h3>
+<ol class="steps">
+  <li>Gå til en tjeneste som støtter passkeys, for eksempel <code>account.microsoft.com</code> (personlig konto), Google eller GitHub.</li>
+  <li>Finn sikkerhetsinnstillingene og velg «Legg til passkey» / «Opprett tilgangsnøkkel».</li>
+  <li>Windows spør hvor du vil lagre den. Velg <em>Denne Windows-enheten</em>.</li>
+  <li>Bekreft med Windows Hello. Ferdig.</li>
+  <li>Sjekk at den ligger under <span class="path">Innstillinger → Kontoer → Passkeys</span>.</li>
+</ol>
+`,
+alt:`<strong>Forklart på en annen måte</strong>
+<p>Tenk på PC-en som et hus med en innebygd safe (TPM-brikken). Passkeyen ligger i safen og kan aldri tas ut. Det er veldig trygt, men hvis du flytter til et nytt hus (ny PC), blir safen og innholdet igjen i det gamle huset.</p>`,
+quiz:[
+ {q:"Du får ny jobb-PC. Hva skjer med passkeyene som lå i Windows Hello på den gamle?",
+  o:["De flyttes automatisk","De følger ikke med. Du må lage nye på den nye PC-en","De ligger i OneDrive"], c:1,
+  e:"Passkeys i Windows Hello er som regel bundet til den enkelte PC-en. På en jobb-PC må du sette opp på nytt."},
+ {q:"Hva beskytter en passkey lagret i Windows Hello?",
+  o:["Antivirusprogrammet","TPM-sikkerhetsbrikken i PC-en","Brannmuren"], c:1,
+  e:"TPM-brikken holder nøkkelen og lar den aldri forlate maskinen."}
+]});
+
+add({id:"mobil", lvl:2, title:"Lagring 2: Mobilen som nøkkel",
+lede:"Passkeyen kan ligge på mobilen, og du kan bruke den til å logge inn på PC-en ved å skanne en QR-kode.",
+body:`
+<p>iPhone og Android kan lagre passkeys i sin egen nøkkelring:</p>
+<ul>
+  <li><strong>iPhone/iPad</strong>: i iCloud-nøkkelring (appen <em>Passord</em>). Synkroniseres mellom Apple-enhetene dine.</li>
+  <li><strong>Android</strong>: i Google Passordbehandler. Synkroniseres via Google-kontoen din.</li>
+</ul>
+<h3>Slik logger du inn på PC-en med mobilen</h3>
+<ol class="steps">
+  <li>På PC-en: velg «Logg på med passkey». Windows viser Windows Hello-vinduet.</li>
+  <li>Velg <em>Flere valg → iPhone, iPad eller Android-enhet</em>. En QR-kode vises.</li>
+  <li>Skann QR-koden med mobilkameraet.</li>
+  <li>Mobilen spør om Face ID, fingeravtrykk eller skjermlås. Bekreft.</li>
+  <li>PC-en og mobilen snakker sammen via <strong>Bluetooth</strong> for å sjekke at de er nær hverandre. Du er logget inn.</li>
+</ol>
+<div class="note key"><strong>Bluetooth må være på</strong>Både PC og mobil trenger Bluetooth. Det er ikke for å sende data, men for å bevise at mobilen er fysisk i nærheten. Det stopper en angriper i et annet land fra å lure deg til å skanne en QR-kode.</div>
+<p>Første gang kan du krysse av for å <em>huske</em> telefonen. Da slipper du QR-koden neste gang, og PC-en sender et varsel direkte til mobilen.</p>
+<h3>Fordeler og ulemper</h3>
+<ul>
+  <li><strong>+</strong> Passkeyen følger med deg, og du kan bruke den på hvilken som helst PC.</li>
+  <li><strong>+</strong> Synkronisert: mister du telefonen, finnes passkeyen i skyen og kommer tilbake på ny telefon.</li>
+  <li><strong>–</strong> Et ekstra steg (QR og Bluetooth) på PC-en.</li>
+  <li><strong>–</strong> For jobbkontoer: mange organisasjoner tillater ikke passkeys i private iCloud/Google-kontoer. Mer om det i nivå 3.</li>
+</ul>
+`,
+alt:`<strong>Forklart på en annen måte</strong>
+<p>Mobilen er nøkkelknippet du alltid har i lomma. PC-en er en dør du står foran. QR-koden er dørens måte å si «hold nøkkelen din hit». Bluetooth sjekker at du faktisk står ved døren og ikke er på den andre siden av jorda.</p>`,
+quiz:[
+ {q:"Du prøver å logge inn på PC-en med mobilen, men det stopper etter at du har skannet QR-koden. Hva sjekker du først?",
+  o:["At Bluetooth er på både PC og mobil","At du har nok lagringsplass","At PC-en har kamera"], c:0,
+  e:"Innlogging på tvers av enheter krever Bluetooth for å bekrefte at enhetene er nær hverandre."},
+ {q:"Hva skjer med en passkey lagret i iCloud-nøkkelring hvis du mister iPhonen?",
+  o:["Den er borte for alltid","Den kommer tilbake når du logger inn med Apple-ID på en ny enhet","Den kan brukes av den som finner telefonen"], c:1,
+  e:"iCloud-nøkkelring synkroniserer passkeys. Finneren kommer ikke inn uten skjermlåsen din."}
+]});
+
+add({id:"authenticator", lvl:2, title:"Lagring 3: Microsoft Authenticator",
+lede:"For jobbkontoer i Microsoft 365 er Authenticator-appen det vanligste stedet å ha en passkey på mobilen.",
+body:`
+<p>Du kjenner kanskje Authenticator fra før, fra varsler som «Godkjenn innlogging» med et tall. Appen kan også holde en <strong>ekte passkey</strong> for jobbkontoen din. Det er noe annet enn varslene, og mye sikrere.</p>
+<div class="tablewrap"><table>
+<thead><tr><th></th><th>Varsel i Authenticator (det gamle)</th><th>Passkey i Authenticator (det nye)</th></tr></thead>
+<tbody>
+<tr><td>Hva skjer</td><td>Du skriver passord, får varsel, taster tall</td><td>Du velger passkey, skanner QR eller får varsel, bekrefter med Face ID / finger</td></tr>
+<tr><td>Phishing-resistent</td><td><span class="pill r">Nei</span></td><td><span class="pill g">Ja</span></td></tr>
+<tr><td>Passord nødvendig</td><td>Ja</td><td>Nei</td></tr>
+<tr><td>Synkroniseres</td><td>–</td><td>Nei, bundet til telefonen</td></tr>
+</tbody></table></div>
+<h3>Hvorfor liker IT-avdelingen denne?</h3>
+<ul>
+  <li>Passkeyen er <strong>enhetsbundet</strong>. Den ligger bare i Authenticator på denne telefonen og synkroniseres ikke til private skykontoer.</li>
+  <li>IT kan tillate akkurat Authenticator (og for eksempel bestemte sikkerhetsnøkler) og blokkere alt annet.</li>
+  <li>De fleste har allerede appen.</li>
+</ul>
+<h3>Krav på telefonen</h3>
+<ul>
+  <li>iOS 17 eller nyere / Android 14 eller nyere.</li>
+  <li>Authenticator må være slått på som <em>passkey-leverandør</em>:
+    <ul>
+      <li>iPhone: <span class="path">Innstillinger → Generelt → Autofyll og passord</span> → slå på Authenticator.</li>
+      <li>Android: <span class="path">Innstillinger → Passord, passkeys og kontoer</span> → aktiver Authenticator (navn varierer mellom produsenter).</li>
+    </ul>
+  </li>
+  <li>Bluetooth på når du logger inn på en PC.</li>
+</ul>
+<p>Selve oppsettet for jobbkontoen går vi gjennom i nivå 3.</p>
+`,
+alt:`<strong>Forklart på en annen måte</strong>
+<p>Authenticator-varsel: noen ringer på døra, og du trykker på en knapp for å låse opp uten å se hvem det er.</p>
+<p>Authenticator-passkey: du står selv ved døra med nøkkelen i hånda. Ingen andre kan starte innloggingen på dine vegne.</p>`,
+quiz:[
+ {q:"Hva er den viktigste forskjellen mellom godkjenningsvarsel og passkey i Authenticator?",
+  o:["Passkey er phishing-resistent, varselet er ikke det","Varselet er raskere, ellers er de like","Passkey krever alltid passord i tillegg"], c:0,
+  e:"Et varsel kan godkjennes selv om innloggingen skjer på en falsk side. En passkey kan ikke brukes der."},
+ {q:"Synkroniseres passkeyen i Microsoft Authenticator til iCloud eller Google?",
+  o:["Ja, automatisk","Nei, den er bundet til telefonen","Bare på Android"], c:1,
+  e:"Den er enhetsbundet. Derfor er den populær i bedrifter, men du må ha en plan hvis telefonen blir borte."}
+]});
+
+add({id:"nokkel", lvl:2, title:"Lagring 4: Fysisk sikkerhetsnøkkel",
+lede:"En liten USB- eller NFC-nøkkel (for eksempel YubiKey) som har passkeyen inni seg. Den sikreste og mest robuste varianten.",
+body:`
+<p>En sikkerhetsnøkkel ser ut som en liten minnepinne. Du setter den i USB-porten (USB-A eller USB-C) eller holder den mot en NFC-leser, og trykker på den når Windows ber om det. Nøkkelen har en egen PIN.</p>
+<h3>Når passer dette?</h3>
+<ul>
+  <li><strong>Administratorer</strong> og andre med mye tilgang. Mange organisasjoner krever det for globale administratorer.</li>
+  <li><strong>Delte PCer</strong>, for eksempel i butikk, lager, helse eller produksjon, der man ikke kan binde passkeyen til én PC.</li>
+  <li>Ansatte som <strong>ikke har (eller ikke vil bruke) jobbtelefon</strong>.</li>
+  <li>Som <strong>reservenøkkel</strong> i tillegg til Authenticator.</li>
+</ul>
+<h3>Slik bruker du den på Windows 11</h3>
+<ol class="steps">
+  <li>Velg <em>Logg på med passkey</em>. I Windows Hello-vinduet: <em>Flere valg → Sikkerhetsnøkkel</em>.</li>
+  <li>Sett inn nøkkelen.</li>
+  <li>Skriv nøkkelens PIN (ikke Windows-PIN-en).</li>
+  <li>Berør nøkkelen når den blinker.</li>
+</ol>
+<div class="note"><strong>Administrer nøkkelen i Windows</strong>Under <span class="path">Innstillinger → Kontoer → Påloggingsalternativer → Sikkerhetsnøkkel → Administrer</span> kan du sette eller endre PIN på nøkkelen, eller tilbakestille den.</div>
+<div class="note key"><strong>Obs: tilbakestilling sletter alt</strong>Tilbakestiller du en sikkerhetsnøkkel, forsvinner alle passkeys på den. Skriver du feil PIN for mange ganger, låses nøkkelen og må tilbakestilles.</div>
+<h3>Fordeler og ulemper</h3>
+<ul>
+  <li><strong>+</strong> Fungerer på alle PCer, uten Bluetooth, uten mobil, uten app.</li>
+  <li><strong>+</strong> Kan ikke kopieres. Den høyeste sikkerheten du får.</li>
+  <li><strong>–</strong> Koster penger (typisk 300–800 kr per nøkkel).</li>
+  <li><strong>–</strong> Kan mistes. Bør ha en reserve.</li>
+</ul>
+`,
+alt:`<strong>Forklart på en annen måte</strong>
+<p>En sikkerhetsnøkkel er en helt vanlig husnøkkel, bare digital. Den passer i alle «dører» (PCer) du har lov til å gå inn, du bærer den på nøkkelknippet, og den kan ikke kopieres. Mister du den, må du få en ny fra «vaktmesteren» (IT).</p>`,
+quiz:[
+ {q:"Hvilken PIN bruker du når du logger inn med en sikkerhetsnøkkel?",
+  o:["Windows Hello-PIN-en","Nøkkelens egen PIN","Bankkort-PIN-en"], c:1,
+  e:"Sikkerhetsnøkkelen har sin egen PIN, uavhengig av PC-en."},
+ {q:"Hvilken brukergruppe har mest nytte av fysiske sikkerhetsnøkler?",
+  o:["Brukere på delte PCer og administratorer","Bare de som jobber hjemmefra","Ingen, det er utdatert"], c:0,
+  e:"Nøkkelen er ikke bundet til én PC og krever ikke mobil. Det passer delte PCer og kontoer med mye makt."}
+]});
+
+add({id:"passord", lvl:2, title:"Lagring 5: Passordbehandlere og synk",
+lede:"1Password, Bitwarden, Dashlane, Google Passordbehandler og Microsoft sin egen passordbehandler kan lagre passkeys og synkronisere dem mellom alle enhetene dine.",
+body:`
+<p>Dette er <strong>synkroniserte passkeys</strong>. Passkeyen er kryptert og lagres i skyen hos passordbehandleren, slik at den finnes på PC, mobil og nettbrett samtidig.</p>
+<h3>Hvordan det virker på Windows 11</h3>
+<ul>
+  <li><strong>Som nettleserutvidelse</strong>: utvidelsen i Edge eller Chrome fanger opp passkey-forespørselen før Windows gjør det og tilbyr sin egen passkey.</li>
+  <li><strong>Som passkey-leverandør i Windows</strong>: nyere Windows 11-versjoner lar passordbehandlere registrere seg direkte i Windows. Da dukker de opp som et valg i Windows Hello-vinduet, også i apper og ikke bare i nettleseren.</li>
+  <li><strong>Nettleserens egen</strong>: Chrome lagrer i Google Passordbehandler. Edge har Microsoft Password Manager, som også kan synkronisere passkeys med Microsoft-kontoen din.</li>
+</ul>
+<h3>Synket eller enhetsbundet?</h3>
+<p>Dette er det viktigste valget i hele nivå 2:</p>
+<div class="tablewrap"><table>
+<thead><tr><th></th><th>Synkronisert</th><th>Enhetsbundet</th></tr></thead>
+<tbody>
+<tr><td>Eksempler</td><td>iCloud, Google, 1Password, Bitwarden, Edge/Microsoft-konto</td><td>Windows Hello (på jobb-PC), Authenticator, sikkerhetsnøkkel</td></tr>
+<tr><td>Mister enheten</td><td><span class="pill g">Passkeyen overlever</span></td><td><span class="pill r">Passkeyen er borte</span></td></tr>
+<tr><td>Bekvemmelighet</td><td><span class="pill g">Høy</span> alle enheter</td><td><span class="pill y">Middels</span> én enhet</td></tr>
+<tr><td>Kontroll for bedriften</td><td><span class="pill y">Lavere</span> ligger i en konto IT ikke styrer</td><td><span class="pill g">Høy</span></td></tr>
+<tr><td>Passer best for</td><td>Private kontoer</td><td>Jobbkontoer og administratorer</td></tr>
+</tbody></table></div>
+<div class="note key"><strong>Tommelfingerregel</strong><b>Privat:</b> synkronisert er nesten alltid best. Du mister ikke tilgang om telefonen blir borte.<br><b>Jobb:</b> følg det IT har bestemt. Oftest er det Authenticator, Windows Hello for Business eller sikkerhetsnøkkel.</div>
+<p>Sikkerheten i en synkronisert passkey står og faller på kontoen den synkes med. Bruk sterk beskyttelse på Apple-ID, Google-kontoen eller hovedpassordet til passordbehandleren.</p>
+`,
+alt:`<strong>Forklart på en annen måte</strong>
+<p>Enhetsbundet: nøkkelen er sveiset fast i én dør (PC eller telefon). Veldig trygt, men du kan ikke ta den med.</p>
+<p>Synkronisert: du har en trygg nøkkelboks i skyen som lager en kopi av nøkkelen på hver enhet du eier. Mister du én enhet, har du fortsatt nøkkelen på de andre.</p>`,
+quiz:[
+ {q:"Du vil ha passkeys for private tjenester (Google, Vipps-nettbutikker, GitHub) på både PC og mobil. Hva passer best?",
+  o:["Synkronisert passkey i en passordbehandler eller iCloud/Google","Kun Windows Hello på PC-en","En passkey per enhet, uten synk"], c:0,
+  e:"Synkroniserte passkeys finnes på alle enhetene dine og overlever at en enhet blir borte."},
+ {q:"Hvorfor er mange bedrifter skeptiske til synkroniserte passkeys for jobbkontoen?",
+  o:["De er tregere","Passkeyen havner i en privat skykonto som IT ikke kontrollerer","De virker ikke på Windows"], c:1,
+  e:"IT kan ikke garantere sikkerheten til den private kontoen passkeyen synkroniseres med."}
+]});
+
+add({id:"sammenlign", lvl:2, title:"Oppsummering og veileder", init: initWizard,
+lede:"Alle lagringsstedene side om side, pluss en liten veileder som foreslår hva som passer deg.",
+body:`
+<div class="tablewrap"><table>
+<thead><tr><th>Lagring</th><th>Type</th><th>Brukes på</th><th>Mister enheten</th><th>M365 jobbkonto</th></tr></thead>
+<tbody>
+<tr><td><b>Windows Hello</b></td><td>Enhetsbundet</td><td>Den ene PC-en</td><td>Borte</td><td><span class="pill g">Vanlig</span> via Windows Hello for Business</td></tr>
+<tr><td><b>Microsoft Authenticator</b></td><td>Enhetsbundet</td><td>Telefonen, og PC via QR/Bluetooth</td><td>Borte, IT hjelper deg</td><td><span class="pill g">Anbefalt</span></td></tr>
+<tr><td><b>Sikkerhetsnøkkel</b></td><td>Enhetsbundet</td><td>Alle PCer via USB/NFC</td><td>Borte, bruk reservenøkkel</td><td><span class="pill g">Anbefalt</span> admin og delte PCer</td></tr>
+<tr><td><b>iCloud / Google</b></td><td>Synkronisert</td><td>Alle egne enheter, PC via QR</td><td>Overlever</td><td><span class="pill y">Avhenger av policy</span></td></tr>
+<tr><td><b>1Password, Bitwarden o.l.</b></td><td>Synkronisert</td><td>Alle enheter med appen</td><td>Overlever</td><td><span class="pill y">Avhenger av policy</span></td></tr>
+</tbody></table></div>
+
+<h3>Veileder: hva passer for deg?</h3>
+<form class="wiz" id="wiz" onsubmit="event.preventDefault()">
+  <fieldset><legend>Hvilken konto gjelder det?</legend>
+    <label><input type="radio" name="konto" id="wk1" value="jobb" checked> Jobbkonto (Microsoft 365)</label>
+    <label><input type="radio" name="konto" id="wk2" value="privat"> Private kontoer</label>
+  </fieldset>
+  <fieldset><legend>Hvordan jobber du?</legend>
+    <label><input type="radio" name="pc" id="wp1" value="egen" checked> Egen PC som bare jeg bruker</label>
+    <label><input type="radio" name="pc" id="wp2" value="delt"> Delte PCer (flere bruker samme maskin)</label>
+    <label><input type="radio" name="pc" id="wp3" value="flere"> Bytter mellom flere PCer og enheter</label>
+  </fieldset>
+  <fieldset><legend>Har du smarttelefon du kan bruke?</legend>
+    <label><input type="radio" name="tlf" id="wt1" value="ja" checked> Ja</label>
+    <label><input type="radio" name="tlf" id="wt2" value="nei"> Nei, eller jeg vil ikke bruke den</label>
+  </fieldset>
+  <fieldset><legend>Er du administrator med ekstra rettigheter?</legend>
+    <label><input type="radio" name="adm" id="wa1" value="nei" checked> Nei</label>
+    <label><input type="radio" name="adm" id="wa2" value="ja"> Ja</label>
+  </fieldset>
+  <div class="res" id="wizRes" aria-live="polite"></div>
+</form>
+`,
+alt:`<strong>Forklart på en annen måte</strong>
+<p>Still deg to spørsmål: <em>Hvor mange enheter vil jeg bruke passkeyen på?</em> og <em>Hvem skal ha kontroll over den?</em></p>
+<p>Én enhet og jobben styrer: enhetsbundet (Windows Hello, Authenticator, nøkkel). Mange enheter og du styrer selv: synkronisert (iCloud, Google, passordbehandler).</p>`,
+quiz:[
+ {q:"Kari jobber på et lager der fem ansatte deler to PCer. Hun har ikke jobbtelefon. Hva bør hun bruke for jobbkontoen?",
+  o:["Windows Hello på lager-PCen","Fysisk sikkerhetsnøkkel","Passkey i privat iCloud"], c:1,
+  e:"En sikkerhetsnøkkel er personlig, fungerer på delte PCer og krever ikke telefon."},
+ {q:"Hvilke lagringssteder overlever at enheten blir borte?",
+  o:["Enhetsbundne","Synkroniserte","Ingen av dem"], c:1,
+  e:"Synkroniserte passkeys ligger kryptert i skyen og kommer tilbake på ny enhet."}
+]});
+
+/* ===================== NIVÅ 3 ===================== */
+add({id:"whfb", lvl:3, title:"Windows Hello for Business og passkeys",
+lede:"På jobb-PCen logger du kanskje allerede inn uten passord. Da bruker du Windows Hello for Business, som er beslektet med passkeys.",
+body:`
+<p>I et Microsoft 365-miljø med Windows 11 og Intune er det vanlig at IT har satt opp <strong>Windows Hello for Business</strong> (WHfB). Du merker det slik: du låser opp PC-en med ansikt, finger eller PIN, og så er du automatisk logget inn i Outlook, Teams, SharePoint og Edge.</p>
+<h3>Hva er sammenhengen?</h3>
+<ul>
+  <li>WHfB bruker samme teknologi som passkeys: en nøkkel i TPM-brikken, låst opp med Windows Hello.</li>
+  <li>Når du logger inn på Windows, får PC-en et <strong>påloggingstoken</strong> fra Microsoft Entra ID. Det gir automatisk pålogging (SSO) i M365-appene og i Edge.</li>
+  <li>Derfor ser du sjelden et passkey-vindu på jobb-PCen. WHfB har allerede gjort jobben da du låste opp PC-en.</li>
+</ul>
+<h3>Når trenger du da en «ekstra» passkey?</h3>
+<ul>
+  <li>Når du skal logge inn fra en <strong>annen enhet</strong>: hjemme-PC, en kollegas PC eller nettleser uten SSO.</li>
+  <li>Når du skal <strong>sette opp en ny PC</strong>. Da har du ingen WHfB ennå, og må bevise hvem du er på en annen måte.</li>
+  <li>På <strong>delte PCer</strong>, der WHfB per bruker ikke er praktisk.</li>
+  <li>I <strong>InPrivate-/inkognitovinduer</strong> eller andre nettlesere som ikke får SSO.</li>
+  <li>For <strong>administratorportaler</strong> der IT krever en ny, sterk innlogging.</li>
+</ul>
+<div class="note key"><strong>Oppsummert</strong>WHfB er passkey-innlogging til selve PC-en og alt som henger på den. En passkey i Authenticator eller på en sikkerhetsnøkkel er det du tar med deg til andre enheter.</div>
+`,
+alt:`<strong>Forklart på en annen måte</strong>
+<p>WHfB er som adgangskortet ditt i resepsjonen på jobb. Når du har kommet deg inn i bygget, åpner alle innerdørene seg automatisk (SSO til Outlook, Teams osv.).</p>
+<p>Passkeyen i Authenticator eller på sikkerhetsnøkkelen er nøkkelen du trenger når du skal inn et annet sted enn hovedinngangen, for eksempel fra hjemmekontoret.</p>`,
+quiz:[
+ {q:"Du låser opp jobb-PCen med ansiktet og kommer rett inn i Teams uten mer. Hva er det som skjer?",
+  o:["Windows Hello for Business gir automatisk pålogging (SSO)","Teams har lagret passordet ditt","Du er ikke logget inn skikkelig"], c:0,
+  e:"WHfB gir PC-en et token fra Entra ID som brukes til å logge deg inn i M365 automatisk."},
+ {q:"Når trenger du typisk en passkey i Authenticator eller på sikkerhetsnøkkel i tillegg til WHfB?",
+  o:["Aldri","Når du logger inn fra en annen enhet eller setter opp ny PC","Bare når du bytter passord"], c:1,
+  e:"WHfB er knyttet til den ene PC-en. For andre enheter og ny PC trenger du en passkey du kan ta med."}
+]});
+
+add({id:"registrer", lvl:3, title:"Registrere passkey på jobbkontoen",
+lede:"Trinn for trinn: slik legger du til en passkey i Microsoft Authenticator eller på en sikkerhetsnøkkel for M365-kontoen din.",
+body:`
+<p>Alt skjer på siden <strong>Mine påloggingsdetaljer</strong>: <code>mysignins.microsoft.com/security-info</code>. Gjør dette fra Windows 11-PCen din.</p>
+<h3>A. Passkey i Microsoft Authenticator</h3>
+<ol class="steps">
+  <li>Sørg for at Authenticator er oppdatert, at jobbkontoen ligger i appen, og at Authenticator er slått på som passkey-leverandør (se nivå 2).</li>
+  <li>Gå til <code>mysignins.microsoft.com/security-info</code> og logg inn.</li>
+  <li>Klikk <em>+ Legg til påloggingsmetode</em> og velg <em>Passkey i Microsoft Authenticator</em>.</li>
+  <li>Du kan bli bedt om å bekrefte deg med en eksisterende metode først (MFA). Det er normalt.</li>
+  <li>Følg veiviseren. Den viser en QR-kode på PC-en. Skann den med telefonens kamera (ikke med Authenticator-skanneren, med mindre veiviseren sier det).</li>
+  <li>Velg Authenticator som sted å lagre passkeyen, og bekreft med Face ID / fingeravtrykk.</li>
+  <li>Gi passkeyen et navn du kjenner igjen, for eksempel «Authenticator iPhone 15».</li>
+</ol>
+<h3>B. Passkey på sikkerhetsnøkkel</h3>
+<ol class="steps">
+  <li>På samme side: <em>+ Legg til påloggingsmetode → Passkey</em> (kan hete <em>Sikkerhetsnøkkel</em> eller <em>Passkey (FIDO2)</em>).</li>
+  <li>Velg <em>USB-enhet</em> eller <em>NFC-enhet</em>.</li>
+  <li>Windows Hello-vinduet åpnes. Velg <em>Sikkerhetsnøkkel</em>, sett den inn, skriv nøkkelens PIN (lag en hvis du blir bedt om det), og berør den.</li>
+  <li>Gi den et navn, for eksempel «YubiKey blå».</li>
+</ol>
+<h3>C. Helt ny bruker uten noen metode?</h3>
+<p>Er du nyansatt og har verken passord eller Authenticator ennå, gir IT deg et <strong>midlertidig tilgangspass</strong> (Temporary Access Pass, TAP). Det er en kode som virker i en kort periode. Med den logger du inn på <code>mysignins.microsoft.com</code> og registrerer passkeyen direkte, uten å noensinne ha hatt et passord.</p>
+<div class="note"><strong>Test med én gang</strong>Åpne et InPrivate-vindu i Edge (<kbd>Ctrl</kbd>+<kbd>Shift</kbd>+<kbd>N</kbd>), gå til <code>office.com</code>, og velg <em>Påloggingsalternativer → Logg på med passkey</em>. Da vet du at den virker før du trenger den.</div>
+`,
+alt:`<strong>Forklart på en annen måte</strong>
+<p>Tenk på <code>mysignins.microsoft.com</code> som nøkkelskapet ditt hos IT. Der kan du se hvilke nøkler som er registrert på deg, legge til nye og fjerne gamle.</p>
+<p>Registrering er bare tre ting: 1) bevis hvem du er, 2) lag en ny nøkkel på telefonen eller sikkerhetsnøkkelen, 3) gi den et navn.</p>`,
+quiz:[
+ {q:"Hvor registrerer du en ny passkey for M365-jobbkontoen?",
+  o:["Innstillinger → Kontoer i Windows","mysignins.microsoft.com under Sikkerhetsinformasjon","I Outlook → Alternativer"], c:1,
+  e:"Mine påloggingsdetaljer (mysignins.microsoft.com/security-info) er stedet for sikkerhetsinformasjon på jobbkontoen."},
+ {q:"Hva er et midlertidig tilgangspass (TAP)?",
+  o:["En tidsbegrenset kode fra IT som lar deg logge inn og registrere metoder","En passkey som varer i 30 dager","Et gjestekort til kontoret"], c:0,
+  e:"TAP brukes til å komme i gang eller komme tilbake når du ikke har noen annen metode."},
+ {q:"Hvordan tester du trygt at den nye passkeyen virker?",
+  o:["Logge ut av Windows","Åpne InPrivate i Edge og logge inn på office.com med passkey","Slette de andre metodene først"], c:1,
+  e:"InPrivate har ingen SSO, så du tvinger frem en ekte passkey-innlogging."}
+]});
+
+add({id:"bytte", lvl:3, title:"Jeg skal bytte mobil. Hva da?",
+lede:"Om passkeyene blir med til den nye telefonen, avhenger av hvor de ligger. Noen følger med av seg selv. Andre må du lage på nytt, og da er rekkefølgen viktig.",
+body:`
+<div class="note key"><strong>Gullregelen</strong>Ikke tilbakestill eller lever inn den gamle telefonen før du har bekreftet at du kan logge inn med den nye.</div>
+<h3>Kort fortalt</h3>
+<div class="tablewrap"><table>
+<thead><tr><th>Passkeyen ligger i</th><th>Følger den med?</th><th>Hva du gjør</th></tr></thead>
+<tbody>
+<tr><td><b>Microsoft Authenticator</b> (jobbkonto)</td><td><span class="pill r">Nei</span></td><td>Lag en ny passkey på den nye telefonen, og slett den gamle</td></tr>
+<tr><td><b>iCloud-nøkkelring</b>, iPhone til iPhone</td><td><span class="pill g">Ja</span></td><td>Logg inn med samme Apple-ID og slå på nøkkelring</td></tr>
+<tr><td><b>Google Passordbehandler</b>, Android til Android</td><td><span class="pill g">Ja</span></td><td>Logg inn med samme Google-konto og bekreft med skjermlåsen</td></tr>
+<tr><td><b>1Password, Bitwarden o.l.</b></td><td><span class="pill g">Ja</span></td><td>Installer appen, logg inn og slå den på som passkey-leverandør</td></tr>
+<tr><td><b>iPhone til Android</b> eller omvendt</td><td><span class="pill y">Delvis</span></td><td>Eksporter dem hvis telefonene støtter det, ellers lag nye</td></tr>
+</tbody></table></div>
+
+<h3>Finn din situasjon</h3>
+<form class="wiz" id="bytteWiz" onsubmit="event.preventDefault()">
+  <fieldset><legend>Hvor ligger passkeyen i dag?</legend>
+    <label><input type="radio" name="hvor" id="bh1" value="auth" checked> Microsoft Authenticator (jobbkontoen)</label>
+    <label><input type="radio" name="hvor" id="bh2" value="icloud"> iCloud-nøkkelring / Passord-appen på iPhone</label>
+    <label><input type="radio" name="hvor" id="bh3" value="google"> Google Passordbehandler på Android</label>
+    <label><input type="radio" name="hvor" id="bh4" value="pm"> En passordbehandler (1Password, Bitwarden o.l.)</label>
+    <label><input type="radio" name="hvor" id="bh5" value="vet"> Jeg vet ikke</label>
+  </fieldset>
+  <fieldset><legend>Hva slags telefon bytter du til?</legend>
+    <label><input type="radio" name="til" id="bt1" value="samme" checked> Samme type (iPhone til iPhone, eller Android til Android)</label>
+    <label><input type="radio" name="til" id="bt2" value="annen"> Den andre typen (iPhone til Android, eller omvendt)</label>
+  </fieldset>
+  <fieldset><legend>Har du fortsatt den gamle telefonen, og virker den?</legend>
+    <label><input type="radio" name="gammel" id="bg1" value="ja" checked> Ja</label>
+    <label><input type="radio" name="gammel" id="bg2" value="nei"> Nei, den er borte, ødelagt eller allerede tilbakestilt</label>
+  </fieldset>
+  <div class="res" id="bytteRes" aria-live="polite"></div>
+</form>
+
+<h3>Jobbkontoen: Authenticator steg for steg</h3>
+<p>Dette er den vanligste situasjonen i et M365-miljø, og den eneste der du må gjøre noe aktivt. Passkeyen i Authenticator er bundet til telefonen. Den blir <strong>ikke</strong> med i Authenticator-sikkerhetskopien eller i en iCloud- eller Google-sikkerhetskopi av telefonen.</p>
+<ol class="steps">
+  <li><b>Behold den gamle telefonen</b> slik den er inntil videre.</li>
+  <li>Hvis jobben styrer telefonen med Intune: meld inn den nye telefonen i <em>Firmaportal</em> (Company Portal) først, slik IT har beskrevet.</li>
+  <li>Installer <b>Microsoft Authenticator</b> på den nye telefonen og legg til jobbkontoen. Selv om du gjenoppretter fra sikkerhetskopi, må jobbkontoen som regel bekreftes på nytt.</li>
+  <li>Slå på Authenticator som <b>passkey-leverandør</b> på den nye telefonen (se nivå 2).</li>
+  <li>Gå til <code>mysignins.microsoft.com/security-info</code> på PC-en. Logg inn med den <em>gamle</em> telefonen eller Windows Hello for Business.</li>
+  <li><em>+ Legg til påloggingsmetode → Passkey i Microsoft Authenticator</em>. Skann QR-koden med den <b>nye</b> telefonen og fullfør.</li>
+  <li>Gi den et navn med telefonmodellen, for eksempel «Authenticator Pixel 9». Da ser du hvilken som er hvilken.</li>
+  <li><b>Test</b>: InPrivate-vindu i Edge → <code>office.com</code> → logg inn med passkey via den nye telefonen.</li>
+  <li>Slett den gamle passkeyen på mysignins (den med gammelt telefonnavn).</li>
+  <li>Nå kan du tilbakestille og levere inn den gamle telefonen.</li>
+</ol>
+<div class="note"><strong>Allerede tilbakestilt den gamle?</strong>Har du Windows Hello for Business eller en sikkerhetsnøkkel, bruker du den til steg 5. Har du ingenting annet, må du kontakte IT og få et midlertidig tilgangspass (TAP). Se neste leksjon.</div>
+
+<h3>Private passkeys: iPhone til iPhone</h3>
+<ul>
+  <li>Logg inn med <b>samme Apple-ID</b> på den nye iPhonen.</li>
+  <li>Sjekk at nøkkelring er på: <span class="path">Innstillinger → [navnet ditt] → iCloud → Passord (og nøkkelring)</span>.</li>
+  <li>Du kan bli bedt om koden til den <em>gamle</em> iPhonen. Nøkkelringen er ende-til-ende-kryptert, og koden låser den opp.</li>
+  <li>Åpne <em>Passord</em>-appen og sjekk at passkeyene er der.</li>
+</ul>
+
+<h3>Private passkeys: Android til Android</h3>
+<ul>
+  <li>Logg inn med <b>samme Google-konto</b>.</li>
+  <li>Første gang du bruker en passkey, kan du bli bedt om skjermlåsen (PIN/mønster) fra den gamle Android-telefonen eller PIN-en til Google Passordbehandler. Det låser opp de krypterte passkeyene.</li>
+  <li>Sjekk i <em>Google Passordbehandler</em> at de ligger der.</li>
+</ul>
+
+<h3>Bytter du mellom iPhone og Android?</h3>
+<p>iCloud-passkeys synkroniseres ikke til Android, og Google-passkeys ikke til iPhone. Du har tre muligheter:</p>
+<ol>
+  <li><b>Eksport og import.</b> Nyere versjoner av iOS og Android har begynt å støtte overføring av passkeys mellom leverandører (FIDO-standarden <em>Credential Exchange</em>). Om det virker, avhenger av versjonen på begge telefonene. Se etter «Eksporter» i Passord-appen eller passordbehandleren.</li>
+  <li><b>Bytt til en passordbehandler som virker på begge</b>, for eksempel 1Password eller Bitwarden, og bruk den fremover.</li>
+  <li><b>Lag nye passkeys.</b> Logg inn på hver tjeneste med den gamle telefonen, legg til en passkey fra den nye, og slett den gamle. Lag en liste over tjenestene før du starter. Passord-appen eller Google Passordbehandler viser hvilke du har.</li>
+</ol>
+
+<h3>Rydd opp i Windows</h3>
+<p>Hvis du har valgt «husk denne telefonen» på PC-en, kan den gamle telefonen fortsatt dukke opp som valg i Windows Hello-vinduet. Første gang du logger inn med den nye, velger du <em>Flere valg → iPhone, iPad eller Android-enhet</em> og skanner QR-koden på nytt. Fjern den gamle telefonen hvis den står i listen over koblede enheter.</p>
+`,
+alt:`<strong>Forklart på en annen måte</strong>
+<p>Tenk på det som å flytte.</p>
+<p><b>Synkroniserte passkeys</b> (iCloud, Google, passordbehandler) ligger i en flyttekasse i et lager i skyen. Når du kommer til det nye huset og viser at det er deg (samme konto og gammel kode), blir kassen levert på døra.</p>
+<p><b>Authenticator-passkeyen</b> er en nøkkel som er sveiset fast i det gamle huset. Du får ikke tatt den med. Derfor får du laget en ny nøkkel til det nye huset <em>før</em> du leverer fra deg det gamle. Til slutt sier du fra til utleier (mysignins) at den gamle nøkkelen ikke skal virke lenger.</p>`,
+init: initBytteWizard,
+quiz:[
+ {q:"Du har jobbkontoens passkey i Authenticator og har fått ny telefon. Hva gjør du FØRST?",
+  o:["Tilbakestiller den gamle telefonen","Registrerer ny passkey fra den nye telefonen, mens den gamle fortsatt virker","Gjenoppretter Authenticator fra sikkerhetskopi, så er passkeyen med"], c:1,
+  e:"Authenticator-passkeys blir ikke med i sikkerhetskopien. Lag den nye mens den gamle fortsatt virker."},
+ {q:"Du bytter fra iPhone til ny iPhone med samme Apple-ID. Hva skjer med de private passkeyene i iCloud-nøkkelring?",
+  o:["De kommer automatisk når nøkkelring er på","De må lages på nytt én og én","De er borte"], c:0,
+  e:"Synkroniserte passkeys følger kontoen. Du kan bli bedt om koden til den gamle telefonen."},
+ {q:"Hva gjør du med den gamle passkeyen på mysignins etter at den nye virker?",
+  o:["Lar den stå, i tilfelle","Sletter den","Endrer navnet"], c:1,
+  e:"En passkey på en telefon du ikke har lenger, bør ikke kunne brukes. Rydd opp."}
+]});
+
+function initBytteWizard(){
+  const f = document.getElementById("bytteWiz"), out = document.getElementById("bytteRes");
+  const upd = () => {
+    const v = n => (f.querySelector(`input[name=${n}]:checked`)||{}).value;
+    const hvor=v("hvor"), til=v("til"), gammel=v("gammel");
+    let t="", s=[];
+    if(hvor==="vet"){
+      t = "Finn ut hvor passkeyen ligger først";
+      s.push("<b>Jobbkontoen:</b> se på <code>mysignins.microsoft.com/security-info</code>. Står det «Passkey i Microsoft Authenticator», ligger den i Authenticator.");
+      s.push("<b>iPhone:</b> åpne Passord-appen og søk etter tjenesten. Står den der, ligger den i iCloud-nøkkelring.");
+      s.push("<b>Android:</b> se i Google Passordbehandler (Innstillinger → Google → Autofyll, eller passwords.google.com).");
+      s.push("<b>Passordbehandler:</b> søk etter tjenesten i appen og se om den har en passkey.");
+      s.push("Velg riktig alternativ over når du vet svaret.");
+    } else if(hvor==="auth"){
+      if(gammel==="ja"){
+        t = "Lag ny passkey før du gir fra deg den gamle telefonen";
+        s.push("Installer Authenticator på den nye telefonen og legg til jobbkontoen.");
+        s.push("Slå på Authenticator som passkey-leverandør.");
+        s.push("mysignins → Legg til påloggingsmetode → Passkey i Microsoft Authenticator. Skann QR-koden med den nye telefonen.");
+        s.push("Test i InPrivate-vindu, og slett så den gamle passkeyen på mysignins.");
+        s.push("Tilbakestill den gamle telefonen til slutt.");
+      } else {
+        t = "Bruk en annen metode, eller få hjelp fra IT";
+        s.push("Har du Windows Hello for Business på jobb-PCen eller en sikkerhetsnøkkel? Logg inn på mysignins med den og registrer ny passkey fra den nye telefonen.");
+        s.push("Har du ingen annen metode: kontakt IT og be om et midlertidig tilgangspass (TAP).");
+        s.push("Slett passkeyen for den gamle telefonen på mysignins når du er inne igjen.");
+      }
+      if(til==="annen") s.push("Bytte mellom iPhone og Android spiller ingen rolle her. Du lager uansett en ny passkey.");
+    } else if(hvor==="pm"){
+      t = "Passkeyene følger med";
+      s.push("Installer passordbehandleren på den nye telefonen og logg inn.");
+      s.push("Slå den på som passkey-leverandør / autofyll i telefonens innstillinger.");
+      s.push(til==="annen" ? "Det spiller ingen rolle at du bytter mellom iPhone og Android. Passordbehandleren virker på begge." : "Test én innlogging før du tilbakestiller den gamle telefonen.");
+      if(gammel==="nei") s.push("Har du tofaktor på selve passordbehandleren, trenger du gjenopprettingskoden eller nødsettet ditt.");
+    } else {
+      const eco = hvor==="icloud" ? "Apple-ID" : "Google-konto";
+      if(til==="samme"){
+        t = "Passkeyene følger med automatisk";
+        s.push(`Logg inn med samme ${eco} på den nye telefonen.`);
+        s.push(hvor==="icloud" ? "Slå på iCloud → Passord (og nøkkelring). Du kan bli bedt om koden til den gamle iPhonen." : "Du kan bli bedt om skjermlåsen til en tidligere Android-telefon eller PIN-en til Google Passordbehandler.");
+        s.push(hvor==="icloud" ? "Sjekk i Passord-appen at passkeyene er der." : "Sjekk i Google Passordbehandler at passkeyene er der.");
+        if(gammel==="nei") s.push("Gammel telefon borte? Det går fortsatt, så lenge du kommer inn på kontoen og husker skjermkoden til den gamle telefonen (eller har gjenopprettingsnøkkel).");
+      } else {
+        t = "Passkeyene synkroniseres ikke over til den andre plattformen";
+        s.push("Se om du kan <b>eksportere</b> passkeyene (i Passord-appen eller Google Passordbehandler) til den nye telefonen eller til en passordbehandler. Det avhenger av versjonene.");
+        s.push("Alternativt: flytt dem over i en passordbehandler som virker på begge, som 1Password eller Bitwarden.");
+        s.push("Eller: lag en liste over tjenestene, logg inn på hver av dem og lag ny passkey fra den nye telefonen.");
+        if(gammel==="nei") s.push("Uten den gamle telefonen: logg inn på tjenestene med passord eller gjenopprettingsmetoden deres, og lag nye passkeys. Passkeyene ligger fortsatt i " + eco + " hvis du senere får en enhet fra samme plattform.");
+        else s.push("Behold den gamle telefonen til alle viktige tjenester er flyttet.");
+      }
+    }
+    out.innerHTML = `<h4>${t}</h4><ul>${s.map(r=>`<li>${r}</li>`).join("")}</ul>`;
+  };
+  f.addEventListener("change", upd); upd();
+}
+
+add({id:"tapt", lvl:3, title:"Når mobilen eller nøkkelen blir borte",
+lede:"Enhetsbundne passkeys forsvinner med enheten. Med litt planlegging er det bare en liten hump i veien.",
+body:`
+<h3>Før det skjer: ha alltid minst to</h3>
+<p>Registrer minst <strong>to uavhengige</strong> passkey-metoder, for eksempel:</p>
+<ul>
+  <li>Authenticator på telefonen + Windows Hello for Business på PC-en, eller</li>
+  <li>Authenticator + en sikkerhetsnøkkel som ligger trygt hjemme, eller</li>
+  <li>To sikkerhetsnøkler (vanlig for administratorer).</li>
+</ul>
+<h3>Hvis telefonen er borte</h3>
+<ol class="steps">
+  <li><strong>Kontakt IT med én gang</strong>, særlig hvis den kan være stjålet. Telefonen er beskyttet av skjermlåsen, men IT bør vite det.</li>
+  <li>Har du en annen metode (WHfB på PC-en, sikkerhetsnøkkel): logg inn på <code>mysignins.microsoft.com</code> og <strong>slett</strong> passkeyen som lå på den tapte telefonen.</li>
+  <li>Har du ingen annen metode: IT verifiserer identiteten din og gir deg et <strong>midlertidig tilgangspass (TAP)</strong>.</li>
+  <li>Sett opp Authenticator på den nye telefonen og registrer en <strong>ny</strong> passkey. Passkeyen fra den gamle telefonen kan ikke gjenopprettes. Det er med vilje.</li>
+</ol>
+<div class="note key"><strong>Hvorfor kan jeg ikke bare gjenopprette den?</strong>Hele poenget med en enhetsbundet passkey er at den bare finnes ett sted. En sikkerhetskopi ville vært en kopi en angriper kunne stjele. Derfor lager du en ny i stedet.</div>
+<h3>Ny telefon (den gamle virker fortsatt)</h3>
+<p>Da er det et planlagt bytte, ikke et tap. Se forrige leksjon, «Jeg skal bytte mobil».</p>
+<h3>Ny PC</h3>
+<p>Windows Hello for Business settes opp på nytt på den nye PC-en. Du bekrefter deg med passkeyen i Authenticator eller på sikkerhetsnøkkelen under oppsettet. Nok en grunn til å ha minst to metoder.</p>
+`,
+alt:`<strong>Forklart på en annen måte</strong>
+<p>Det er som å miste husnøkkelen: du kan ikke «gjenopprette» den gamle, men du kan bytte lås og få en ny. Har du en reservenøkkel hos naboen (en ekstra metode), kommer du inn med én gang. Har du ikke det, må du ringe låsesmeden (IT), som sjekker legitimasjon før du får komme inn.</p>`,
+quiz:[
+ {q:"Du har byttet telefon og tørket den gamle. Hva gjør du med passkeyen som lå i Authenticator på den gamle?",
+  o:["Gjenoppretter den fra sikkerhetskopi","Registrerer en ny på den nye telefonen og sletter den gamle i mysignins","Ingenting, den flyttes automatisk"], c:1,
+  e:"Enhetsbundne passkeys kan ikke flyttes eller gjenopprettes. Lag ny og rydd opp."},
+ {q:"Hva er det beste forebyggende tiltaket?",
+  o:["Skrive ned PIN-en","Ha minst to uavhengige passkey-metoder registrert","Bare bruke passord i tillegg"], c:1,
+  e:"Med to metoder kan du alltid logge inn og ordne opp selv."}
+]});
+
+/* ===================== NIVÅ 4 ===================== */
+add({id:"policy", lvl:4, title:"Admin: passkey-policy i Entra ID",
+lede:"For IT: slik styrer du hvilke passkeys brukerne får registrere på M365-kontoene sine.",
+body:`
+<p>Innstillingene ligger i Microsoft Entra-administrasjonssenteret:</p>
+<p><span class="path">Entra ID → Autentiseringsmetoder → Policyer → Passkey (FIDO2)</span></p>
+<h3>Viktige innstillinger</h3>
+<div class="tablewrap"><table>
+<thead><tr><th>Innstilling</th><th>Hva den gjør</th><th>Vanlig valg</th></tr></thead>
+<tbody>
+<tr><td><b>Aktiver og målrett</b></td><td>Hvilke brukere/grupper som kan bruke passkeys</td><td>Start med en pilotgruppe, deretter alle</td></tr>
+<tr><td><b>Tillat selvbetjent oppsett</b></td><td>Om brukere kan registrere passkeys selv i mysignins</td><td>Ja</td></tr>
+<tr><td><b>Håndhev attestering</b></td><td>Krever at passkeyen beviser hvilken modell/leverandør den kommer fra</td><td>Ja når du vil begrense til godkjente enheter</td></tr>
+<tr><td><b>Nøkkelbegrensninger</b></td><td>Tillat eller blokker bestemte leverandører via AAGUID</td><td>Tillat Authenticator + godkjente sikkerhetsnøkler</td></tr>
+</tbody></table></div>
+<h3>AAGUID: modellnummeret til en passkey</h3>
+<p>Hver passkey-leverandør har en <strong>AAGUID</strong>, en ID som sier hva slags autentikator det er. Med nøkkelbegrensninger kan du lage en tillatelsesliste. Microsoft Authenticator har egne AAGUID-er for iOS og Android:</p>
+<div class="tablewrap"><table style="min-width:520px">
+<thead><tr><th>Autentikator</th><th>AAGUID</th></tr></thead>
+<tbody>
+<tr><td>Microsoft Authenticator (iOS)</td><td class="mono">90a3ccdf-635c-4729-a248-9b709135078f</td></tr>
+<tr><td>Microsoft Authenticator (Android)</td><td class="mono">de1e552d-db1d-4423-a619-566b625cdc84</td></tr>
+</tbody></table></div>
+<p>AAGUID-er for sikkerhetsnøkler finner du hos leverandøren (for eksempel Yubico) eller i FIDO Alliance sin metadatatjeneste. Verifiser alltid ID-ene mot Microsoft Learn før du låser ned.</p>
+<div class="note key"><strong>Pass på før du slår på begrensninger</strong>Når du legger inn en tillatelsesliste, kan brukere med passkeys fra andre leverandører bli stengt ute. Sjekk først hva som er registrert (rapporten <em>Brukerregistreringsdetaljer</em> under Autentiseringsmetoder → Aktivitet).</div>
+<h3>Synkroniserte passkeys i Entra ID</h3>
+<p>Microsoft har åpnet for <strong>passkey-profiler</strong>, der ulike grupper kan få ulike regler. For eksempel kan vanlige brukere få lov til synkroniserte passkeys (iCloud, Google, passordbehandlere), mens administratorer bare får enhetsbundne med attestering. Funksjonen har vært i forhåndsversjon, så sjekk gjeldende status i Microsoft Learn før du planlegger rundt den.</p>
+<h3>Andre relevante metoder i policyen</h3>
+<ul>
+  <li><b>Midlertidig tilgangspass</b>: slå på for onboarding og gjenoppretting. Sett kort levetid og engangsbruk.</li>
+  <li><b>Microsoft Authenticator</b>: vurder å slå av «passordløs telefoninnlogging» og varsler over tid når passkeys er rullet ut.</li>
+  <li><b>SMS og taleanrop</b>: fas ut når brukerne har phishing-resistente metoder.</li>
+</ul>
+`,
+alt:`<strong>Forklart på en annen måte</strong>
+<p>Policyen er dørvakten ved registreringen. Du bestemmer <em>hvem</em> som får registrere nøkler (grupper), og <em>hvilke merker</em> nøkler som slippes inn (AAGUID). Attestering er å kreve legitimasjon: nøkkelen må bevise at den er det merket den sier den er.</p>`,
+quiz:[
+ {q:"Hva brukes AAGUID til i passkey-policyen?",
+  o:["Identifisere hvilken leverandør/modell en passkey kommer fra","Kryptere passkeyen","Identifisere brukeren"], c:0,
+  e:"AAGUID identifiserer autentikatortypen og brukes i tillatelses- eller blokkeringslister."},
+ {q:"Hvorfor bør du sjekke registrerte metoder før du slår på nøkkelbegrensninger?",
+  o:["For å unngå at brukere med andre passkeys blir stengt ute","Det er ikke nødvendig","For å få lisens"], c:0,
+  e:"En ny tillatelsesliste gjelder også eksisterende passkeys. Kartlegg først."}
+]});
+
+add({id:"ca", lvl:4, title:"Betinget tilgang: krev phishing-resistent MFA",
+lede:"Når passkeys er på plass, kan du kreve dem med Conditional Access og autentiseringsstyrker.",
+body:`
+<p>Å gi brukerne passkeys er halve jobben. Så lenge de <em>kan</em> logge inn med passord og SMS, kan en angriper også gjøre det. <strong>Autentiseringsstyrker</strong> (Authentication strengths) i Betinget tilgang løser det.</p>
+<h3>Innebygd styrke: Phishing-resistent MFA</h3>
+<p>Microsoft har en ferdig styrke som heter <em>Phishing-resistent MFA</em>. Den godtar:</p>
+<ul>
+  <li>Windows Hello for Business (og platform credential på macOS)</li>
+  <li>Passkey (FIDO2), inkludert Authenticator og sikkerhetsnøkler</li>
+  <li>Sertifikatbasert autentisering med flere faktorer</li>
+</ul>
+<h3>Anbefalt rekkefølge</h3>
+<ol class="steps">
+  <li><b>Administratorer først.</b> Policy: målrett administratorroller, alle ressurser, bevilg tilgang med <em>Krev autentiseringsstyrke → Phishing-resistent MFA</em>.</li>
+  <li><b>Administrasjonsportaler.</b> Krev det samme for <em>Microsoft Admin Portals</em> for alle som har tilgang.</li>
+  <li><b>Pilotgruppe av vanlige brukere</b> som allerede har registrert passkey.</li>
+  <li><b>Alle brukere</b>, med unntak for nødtilgangskontoer (break-glass).</li>
+</ol>
+<div class="note key"><strong>Start i «Kun rapport»-modus</strong>Sett policyen til <em>Kun rapport</em> i 1–2 uker. Sjekk påloggingsloggene: hvem ville blitt blokkert? Hjelp dem å registrere passkey før du slår den på.</div>
+<div class="note"><strong>Glem ikke nødtilgangskontoene</strong>Minst to «break glass»-kontoer skal ekskluderes fra policyene eller ha sine egne sikkerhetsnøkler lagret trygt. Ellers kan du låse deg selv ute av tenanten.</div>
+<h3>Hva ser brukeren?</h3>
+<p>En bruker uten passkey som treffer policyen får beskjed om at organisasjonen krever en sterkere metode, og blir sendt til å registrere en (hvis registrering er tillatt fra der de står). Det er derfor TAP og en god kommunikasjonsplan er viktig.</p>
+`,
+alt:`<strong>Forklart på en annen måte</strong>
+<p>Passkeys uten Betinget tilgang er som å gi alle en ny, sikker nøkkel, men la den gamle døren med kodelås stå åpen ved siden av. Autentiseringsstyrken er å stenge den gamle døren, først for de viktigste rommene (admin), så for resten.</p>`,
+quiz:[
+ {q:"Hvilken innstilling i Betinget tilgang tvinger frem passkey / WHfB?",
+  o:["Krev godkjent klientapp","Krev autentiseringsstyrke: Phishing-resistent MFA","Krev passordendring"], c:1,
+  e:"Autentiseringsstyrken Phishing-resistent MFA godtar bare WHfB, passkeys og sertifikatbasert MFA."},
+ {q:"Hvorfor starte i «Kun rapport»-modus?",
+  o:["Se hvem som ville blitt blokkert før det faktisk skjer","Det er raskere","Det kreves av lisensen"], c:0,
+  e:"Da kan du hjelpe brukerne med registrering før policyen håndheves."}
+]});
+
+add({id:"feil", lvl:4, title:"Feilsøking på Windows 11",
+lede:"De vanligste problemene brukere møter, og hva du gjør med dem.",
+body:`
+<div class="tablewrap"><table>
+<thead><tr><th>Symptom</th><th>Sannsynlig årsak</th><th>Løsning</th></tr></thead>
+<tbody>
+<tr><td>QR-koden skannes, men ingenting skjer</td><td>Bluetooth av på PC eller telefon, eller PC-en mangler Bluetooth</td><td>Slå på Bluetooth begge steder. Stasjonære PCer kan trenge en USB-Bluetooth-adapter. Sjekk at Bluetooth ikke er blokkert av policy.</td></tr>
+<tr><td>Authenticator vises ikke som valg når passkey skal lagres</td><td>Authenticator er ikke aktivert som passkey-leverandør, eller for gammel OS-versjon</td><td>iOS 17+/Android 14+. Slå på Authenticator under Autofyll/Passord-innstillingene. Oppdater appen.</td></tr>
+<tr><td>«Denne passkeyen / sikkerhetsnøkkelen kan ikke brukes» ved registrering</td><td>Leverandøren er ikke på tillatelseslisten (AAGUID) eller attestering feiler</td><td>IT sjekker nøkkelbegrensningene i passkey-policyen.</td></tr>
+<tr><td>Passkey-alternativet vises ikke på innloggingssiden</td><td>Brukeren er ikke med i gruppen passkey-policyen gjelder for</td><td>Legg brukeren i riktig gruppe. Velg <em>Påloggingsalternativer</em> på innloggingssiden.</td></tr>
+<tr><td>Sikkerhetsnøkkelen er låst</td><td>For mange feil PIN-forsøk</td><td>Tilbakestill under Innstillinger → Kontoer → Påloggingsalternativer → Sikkerhetsnøkkel. <b>Alle passkeys på nøkkelen slettes</b>, og må registreres på nytt.</td></tr>
+<tr><td>Windows Hello ber om PIN i stedet for ansikt</td><td>Kameraet ser ikke ansiktet (lys, dokkingstasjon med lukket lokk)</td><td>Bruk PIN, eller forbedre ansiktsgjenkjenning under Påloggingsalternativer.</td></tr>
+<tr><td>Passkey fungerer ikke i fjernskrivebord (RDP)</td><td>WebAuthn-videresending er slått av</td><td>Windows 11 kan videresende passkey-forespørsler fra RDP-økten til din lokale PC. Sjekk at videresending er tillatt i RDP-klienten og policy.</td></tr>
+<tr><td>Innlogging på feil konto / mange passkeys å velge mellom</td><td>Gamle passkeys ligger igjen</td><td>Rydd opp i <span class="path">Innstillinger → Kontoer → Passkeys</span> og på mysignins.</td></tr>
+</tbody></table></div>
+<h3>Nyttige steder å se</h3>
+<ul>
+  <li><b>Bruker:</b> <code>mysignins.microsoft.com/security-info</code> viser registrerte metoder. <em>Nylig aktivitet</em> på samme side viser innlogginger.</li>
+  <li><b>IT:</b> Entra-påloggingslogger, kolonnen <em>Autentiseringsdetaljer</em> viser hvilken metode som ble brukt og hvorfor den eventuelt feilet.</li>
+  <li><b>IT:</b> Brukerens autentiseringsmetoder i Entra: her kan du se passkeyene (inkludert AAGUID og modell) og slette dem.</li>
+</ul>
+`,
+alt:`<strong>Forklart på en annen måte</strong>
+<p>Nesten alle feil faller i tre bøtter:</p>
+<p>1) <b>Forbindelsen</b> (Bluetooth, nettverk). 2) <b>Enheten</b> (gammel OS, app ikke aktivert, nøkkel låst). 3) <b>Policyen</b> (brukeren eller nøkkeltypen er ikke tillatt). Sjekk i den rekkefølgen.</p>`,
+quiz:[
+ {q:"En bruker får «kan ikke brukes» når hen prøver å registrere en ny sikkerhetsnøkkel av et merke IT ikke har kjøpt inn. Hva er mest sannsynlig?",
+  o:["Nøkkelen er ødelagt","Merket er ikke på AAGUID-tillatelseslisten","Windows mangler oppdatering"], c:1,
+  e:"Nøkkelbegrensninger i passkey-policyen blokkerer leverandører som ikke er tillatt."},
+ {q:"Hva skjer hvis du tilbakestiller en låst sikkerhetsnøkkel?",
+  o:["Bare PIN-en nullstilles","Alle passkeys på nøkkelen slettes","Den sendes til IT"], c:1,
+  e:"Tilbakestilling sletter alt. Registrer nøkkelen på nytt i mysignins etterpå."}
+]});
+
+add({id:"utrulling", lvl:4, title:"Utrullingsplan for organisasjonen",
+lede:"En praktisk plan for å gå fra passord til passkeys i et M365-miljø med Windows 11.",
+body:`
+<ol class="steps">
+  <li><b>Kartlegg.</b> Hvilke metoder bruker folk i dag? Hvem har jobbtelefon? Hvem sitter på delte PCer? Hvilke PCer har Windows Hello-kamera eller fingeravtrykksleser?</li>
+  <li><b>Velg metoder per gruppe.</b>
+    <ul>
+      <li>Kontorbrukere med egen PC: WHfB + passkey i Authenticator.</li>
+      <li>Delte PCer / uten telefon: sikkerhetsnøkkel.</li>
+      <li>Administratorer: to sikkerhetsnøkler + WHfB, egne admin-kontoer.</li>
+    </ul>
+  </li>
+  <li><b>Konfigurer Entra.</b> Passkey (FIDO2)-policy med pilotgruppe, TAP aktivert, eventuelle nøkkelbegrensninger.</li>
+  <li><b>Konfigurer Intune.</b> Windows Hello for Business-policy, Bluetooth tillatt, oppdatert Windows 11 og Authenticator.</li>
+  <li><b>Pilot.</b> 10–30 brukere fra ulike avdelinger, inkludert noen som ikke er teknisk interessert. Samle spørsmålene deres, det blir FAQ-en din.</li>
+  <li><b>Kommuniser.</b> Kort e-post: hva endres, hvorfor, hva de skal gjøre, og hvor de får hjelp. Del gjerne dette kurset.</li>
+  <li><b>Registreringskampanje.</b> Bruk Entra sin registreringskampanje eller Betinget tilgang for å be brukere registrere passkey ved innlogging.</li>
+  <li><b>Håndhev.</b> Autentiseringsstyrke <em>Phishing-resistent MFA</em>, først i Kun rapport, så på. Administratorer først.</li>
+  <li><b>Fas ut svake metoder.</b> SMS, taleanrop og til slutt passord der det er mulig.</li>
+  <li><b>Etterlevelse.</b> Følg med på rapporten over registrerte metoder og påloggingslogger. Ha en tydelig rutine for tapt enhet (TAP).</li>
+</ol>
+<div class="note key"><strong>Suksesskriterium</strong>En bruker skal kunne miste telefonen en fredag ettermiddag og være tilbake i arbeid mandag morgen på under 15 minutter. Test den rutinen i piloten.</div>
+<h3>Ferdig!</h3>
+<p>Du har nå gått gjennom hele kurset: fra hva en passkey er, via de ulike lagringsstedene, til hvordan det brukes og styres i et Microsoft 365-miljø med Windows 11.</p>
+`,
+alt:`<strong>Forklart på en annen måte</strong>
+<p>Tenk på det som å bytte låser i et kontorbygg: finn ut hvem som trenger hvilke dører, bestill riktige nøkler, test på én etasje, del ut nøklene med en god forklaring, og <em>først da</em> fjerner du de gamle kodelåsene.</p>`,
+quiz:[
+ {q:"Hva bør du gjøre før du håndhever phishing-resistent MFA for alle?",
+  o:["Pilot, kommunikasjon og registreringskampanje","Slette alle passord samme dag","Ingenting, det går av seg selv"], c:0,
+  e:"Brukerne må ha en passkey registrert før du krever det, ellers stenges de ute."},
+ {q:"Hvilken gruppe bør få krav om phishing-resistent MFA først?",
+  o:["Nyansatte","Administratorer","Eksterne gjester"], c:1,
+  e:"Administratorer har mest makt og er de mest attraktive målene."}
+]});
+
+/* ===================== MOTOR ===================== */
+const KEY = "passkey-skolen-v1";
+let S = {done:{}, cur:L[0].id, all:false};
+try{ const raw = localStorage.getItem(KEY); if(raw) S = Object.assign(S, JSON.parse(raw)); }catch(e){}
+const save = () => { try{ localStorage.setItem(KEY, JSON.stringify(S)); }catch(e){} };
+
+const idx = id => L.findIndex(x => x.id === id);
+const unlocked = i => S.all || i === 0 || !!S.done[L[i-1].id];
+const state = i => S.done[L[i].id] ? "done" : unlocked(i) ? "open" : "locked";
+if(idx(S.cur) < 0 || !unlocked(idx(S.cur))) S.cur = L[0].id;
+
+function renderMap(){
+  const m = document.getElementById("map");
+  const curLvl = L[idx(S.cur)].lvl;
+  m.innerHTML = LEVELS.map(lv => {
+    const items = L.map((x,i)=>({x,i})).filter(o=>o.x.lvl===lv.n);
+    const nDone = items.filter(o=>S.done[o.x.id]).length;
+    return `<details ${lv.n===curLvl?"open":""}>
+      <summary><span class="lvl-badge">NIVÅ ${lv.n}</span><span style="flex:1">${lv.name}</span><span class="mono" style="color:var(--muted);font-weight:400">${nDone}/${items.length}</span></summary>
+      <ol>${items.map(({x,i}) => {
+        const st = state(i);
+        return `<li><button class="ls" data-id="${x.id}" data-state="${st}" aria-current="${x.id===S.cur}" ${st==="locked"?'aria-disabled="true" title="Fullfør forrige leksjon først"':""}>
+          <span class="dot">${st==="done"?"✓":st==="locked"?"🔒︎":""}</span><span>${x.title}</span></button></li>`;
+      }).join("")}</ol></details>`;
+  }).join("") + `<div class="tools">
+      <label><input type="checkbox" id="allToggle" ${S.all?"checked":""}> Lås opp alle leksjoner (for IT / repetisjon)</label>
+      <button class="linkbtn" id="resetBtn">Nullstill fremdrift</button>
+      <div id="resetConfirm" hidden style="font-size:.86rem">Sikker? <button class="linkbtn" id="resetYes">Ja, nullstill</button> · <button class="linkbtn" id="resetNo">Avbryt</button></div>
+    </div>`;
+  m.querySelectorAll("button.ls").forEach(b => b.onclick = () => {
+    if(b.dataset.state === "locked") return;
+    go(b.dataset.id);
+  });
+  m.querySelector("#allToggle").onchange = e => { S.all = e.target.checked; save(); renderMap(); renderLesson(false); };
+  m.querySelector("#resetBtn").onclick = () => { m.querySelector("#resetConfirm").hidden = false; };
+  m.querySelector("#resetNo").onclick = () => { m.querySelector("#resetConfirm").hidden = true; };
+  m.querySelector("#resetYes").onclick = () => { S = {done:{}, cur:L[0].id, all:false}; save(); renderAll(true); };
+
+  const n = Object.keys(S.done).filter(k=>idx(k)>=0).length;
+  document.getElementById("progTxt").textContent = `${n} av ${L.length} leksjoner`;
+  document.getElementById("progBar").style.width = (n/L.length*100)+"%";
+}
+
+function go(id){ S.cur = id; save(); renderAll(true); }
+
+function renderLesson(anim){
+  const i = idx(S.cur), x = L[i], lv = LEVELS[x.lvl-1];
+  const el = document.getElementById("lesson");
+  const posInLvl = L.filter(y=>y.lvl===x.lvl).findIndex(y=>y.id===x.id)+1;
+  const totInLvl = L.filter(y=>y.lvl===x.lvl).length;
+  const isDone = !!S.done[x.id];
+  el.innerHTML = `
+    <div class="eyebrow">Nivå ${x.lvl} · ${lv.name} · Leksjon ${posInLvl} av ${totInLvl}</div>
+    <h2>${x.title}</h2>
+    <p class="lede">${x.lede}</p>
+    <div class="content">${x.body}</div>
+    <section class="check" aria-labelledby="chk-h">
+      <h3 id="chk-h">Sjekkpunkt: har du forstått dette?</h3>
+      <p class="sub">Vær ærlig. Det er helt greit å be om en ny forklaring.</p>
+      <div class="row" id="chkBtns">
+        <button class="btn" id="yes">Ja, test meg</button>
+        <button class="btn ghost" id="alt">Forklar på en annen måte</button>
+      </div>
+      <div class="alt" id="altBox" hidden>${x.alt}
+        <div class="row" style="margin-top:12px"><button class="btn" id="yes2">Nå forstår jeg, test meg</button></div>
+      </div>
+      <div class="quiz" id="quiz" hidden></div>
+      <div id="doneBox"></div>
+    </section>
+    <div class="pager">
+      ${i>0?`<button class="btn ghost" id="prev">← ${L[i-1].title}</button>`:"<span></span>"}
+      ${i<L.length-1?`<button class="btn" id="next" ${unlocked(i+1)?"":"disabled title='Fullfør sjekkpunktet først'"}>${L[i+1].title} →</button>`:""}
+    </div>`;
+  if(anim){ el.classList.remove("anim"); void el.offsetWidth; el.classList.add("anim"); }
+
+  const quiz = el.querySelector("#quiz");
+  const startQuiz = () => { quiz.hidden = false; el.querySelector("#chkBtns").hidden = true; buildQuiz(x, quiz); quiz.scrollIntoView({behavior:"smooth", block:"start"}); };
+  el.querySelector("#yes").onclick = startQuiz;
+  el.querySelector("#yes2").onclick = () => { el.querySelector("#altBox").hidden = true; startQuiz(); };
+  el.querySelector("#alt").onclick = () => { el.querySelector("#altBox").hidden = false; el.querySelector("#alt").hidden = true; };
+  if(el.querySelector("#prev")) el.querySelector("#prev").onclick = () => go(L[i-1].id);
+  if(el.querySelector("#next")) el.querySelector("#next").onclick = () => go(L[i+1].id);
+  if(isDone) showDone(x, true);
+  if(x.init) x.init();
+}
+
+function buildQuiz(x, box){
+  const answered = new Array(x.quiz.length).fill(false);
+  box.innerHTML = x.quiz.map((q,qi)=>`
+    <div class="q" data-qi="${qi}">
+      <div class="qt">${qi+1}. ${q.q}</div>
+      <div class="opts">${q.o.map((o,oi)=>`<button class="o" data-oi="${oi}">${o}</button>`).join("")}</div>
+      <div class="fb" hidden></div>
+    </div>`).join("");
+  box.querySelectorAll(".q").forEach(qel => {
+    const qi = +qel.dataset.qi, q = x.quiz[qi], fb = qel.querySelector(".fb");
+    qel.querySelectorAll("button.o").forEach(b => b.onclick = () => {
+      const oi = +b.dataset.oi;
+      if(oi === q.c){
+        b.classList.add("right");
+        qel.querySelectorAll("button.o").forEach(z=>z.disabled=true);
+        fb.hidden=false; fb.className="fb ok"; fb.innerHTML = `<b>Riktig.</b> ${q.e}`;
+        answered[qi] = true;
+        if(answered.every(Boolean)){ S.done[x.id] = true; save(); renderMap(); showDone(x,false); const nx=document.getElementById("next"); if(nx){nx.disabled=false; nx.removeAttribute("title");} }
+      } else {
+        b.classList.add("wrong"); b.disabled = true;
+        fb.hidden=false; fb.className="fb no"; fb.innerHTML = `<b>Ikke helt.</b> Prøv igjen. Tips: les «Forklar på en annen måte» eller se over leksjonen en gang til.`;
+      }
+    });
+  });
+}
+
+function showDone(x, already){
+  const i = idx(x.id), box = document.getElementById("doneBox");
+  const last = i === L.length-1;
+  const lvlEnd = !last && L[i+1].lvl !== x.lvl;
+  let msg = already ? "Du har fullført denne leksjonen." : "Bra! Leksjonen er fullført.";
+  if(lvlEnd && !already) msg = `Du har fullført nivå ${x.lvl}: ${LEVELS[x.lvl-1].name}. Klar for nivå ${x.lvl+1}?`;
+  if(last) msg = already ? "Du har fullført hele kurset." : "Gratulerer, du har fullført hele Passkey-skolen!";
+  box.innerHTML = `<div class="done-banner"><span><b>✓</b> ${msg}</span>${!last?`<button class="btn key" id="goNext">${lvlEnd?"Start nivå "+(x.lvl+1):"Neste leksjon"} →</button>`:""}</div>`;
+  if(!last) box.querySelector("#goNext").onclick = () => go(L[i+1].id);
+}
+
+function initWizard(){
+  const f = document.getElementById("wiz"), out = document.getElementById("wizRes");
+  const upd = () => {
+    const v = n => (f.querySelector(`input[name=${n}]:checked`)||{}).value;
+    const konto=v("konto"), pc=v("pc"), tlf=v("tlf"), adm=v("adm");
+    let t="", rec=[];
+    if(konto==="privat"){
+      t = "Synkronisert passkey";
+      rec.push("Bruk en passordbehandler du stoler på (1Password, Bitwarden) eller iCloud-nøkkelring / Google Passordbehandler.");
+      if(tlf==="ja") rec.push("Mobilen kan brukes på hvilken som helst PC via QR-kode og Bluetooth.");
+      if(pc==="delt") rec.push("Ikke lagre private passkeys i Windows Hello på en delt PC. Bruk mobilen eller en sikkerhetsnøkkel.");
+      else rec.push("Windows Hello på egen PC er fint i tillegg, for rask innlogging.");
+      if(adm==="ja") rec.push("For viktige kontoer (e-post, bank-ID-relaterte, domener): vurder en fysisk sikkerhetsnøkkel som ekstra.");
+      rec.push("Beskytt kontoen som passkeyene synkes med (Apple-ID, Google, hovedpassord) godt.");
+    } else {
+      if(adm==="ja"){
+        t = "Sikkerhetsnøkler (to stk.) + Windows Hello for Business";
+        rec.push("Bruk to fysiske sikkerhetsnøkler, én daglig og én i reserve på et trygt sted.");
+        rec.push("Bruk en egen administratorkonto, adskilt fra den vanlige kontoen.");
+        if(tlf==="ja") rec.push("Authenticator-passkey kan være en ekstra metode hvis IT tillater det.");
+      } else if(pc==="delt" || tlf==="nei"){
+        t = "Fysisk sikkerhetsnøkkel";
+        rec.push(pc==="delt" ? "På delte PCer er en personlig sikkerhetsnøkkel det mest praktiske." : "Uten telefon er sikkerhetsnøkkel det naturlige valget.");
+        rec.push("Be IT om en reservenøkkel, eller ha en annen metode registrert.");
+      } else {
+        t = "Passkey i Microsoft Authenticator + Windows Hello for Business";
+        rec.push("WHfB på jobb-PCen gir automatisk innlogging i M365.");
+        rec.push("Authenticator-passkeyen tar du med til andre enheter og bruker ved oppsett av ny PC.");
+        if(pc==="flere") rec.push("Når du bytter mellom mange PCer, bruk «husk denne telefonen» for å slippe QR-kode hver gang, eller be om en sikkerhetsnøkkel i tillegg.");
+      }
+      rec.push("Følg alltid IT sine retningslinjer. De kan ha begrenset hvilke typer passkeys som er tillatt.");
+    }
+    out.innerHTML = `<h4>Forslag: ${t}</h4><ul>${rec.map(r=>`<li>${r}</li>`).join("")}</ul>`;
+  };
+  f.addEventListener("change", upd); upd();
+}
+
+function renderAll(anim){ renderMap(); renderLesson(anim); if(anim){ const el=document.getElementById("lesson"); if(el.getBoundingClientRect().top<0) el.scrollIntoView({behavior:"smooth"}); } }
+renderAll(false);
+</script>
+</body>
+</html>
