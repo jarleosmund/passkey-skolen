@@ -15,6 +15,12 @@ Interaktivt kurs på norsk om passkeys for Windows 11-brukere i Microsoft 365. K
 
 `passkey-skolen.html` er kilden. Kjør `./build.sh` for å lage `index.html`, som er det GitHub Pages viser.
 
+## Design og bruk
+
+Kurset har et responsivt design med lys og mørk visning, læringsmål og anslått lesetid for hver leksjon. Kurskartet viser nivåer og fremdrift, og kan åpnes og lukkes på mobil. Quizene låser opp neste leksjon, mens alternativ forklaring og ubegrensede forsøk hjelper deg videre. Fremdrift og temavalg lagres lokalt i nettleseren.
+
+For lokal forhåndsvisning, kjør `python3 -m http.server 8080` og åpne http://localhost:8080.
+
 ## Ansvarsfraskrivelse
 
 Innholdet er generell informasjon til opplæring. Det er ikke offisiell dokumentasjon fra Microsoft, Apple, Google eller andre leverandører, og det er ikke tilknyttet eller godkjent av dem. Menynavn, innstillinger og funksjoner endres ofte, og noe kan være i forhåndsversjon. Kontroller alltid mot oppdatert dokumentasjon fra leverandøren (for eksempel Microsoft Learn) og mot organisasjonens egne retningslinjer.

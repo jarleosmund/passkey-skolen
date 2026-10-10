@@ -150,8 +150,34 @@ figcaption{font-size:.88rem;color:var(--muted);margin-top:6px}
 @media (prefers-reduced-motion: reduce){*{transition:none!important;animation:none!important}}
 @keyframes rise{from{opacity:.4;transform:translateY(6px)}to{opacity:1;transform:none}}
 main.lesson.anim{animation:rise .35s ease}
+
+/* Modern learning interface */
+:root{--bg:#f5f5ee;--surface:#fffef9;--surface-2:#f0f2e9;--ink:#20382e;--muted:#5c6c62;--line:#dce2d7;--accent:#25634b;--accent-soft:#e4eee3;--key:#956020;--key-soft:#faf0d9;--r:22px}
+:root[data-theme="dark"]{--bg:#101d18;--surface:#192a22;--surface-2:#20352b;--ink:#eef4e9;--muted:#b0c0b4;--line:#395044;--accent:#a2d6b2;--accent-soft:#294638;--key:#efd093;--key-soft:#3d3322}
+@media(prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#101d18;--surface:#192a22;--surface-2:#20352b;--ink:#eef4e9;--muted:#b0c0b4;--line:#395044;--accent:#a2d6b2;--accent-soft:#294638;--key:#efd093;--key-soft:#3d3322}}
+html{scroll-behavior:smooth;scroll-padding-top:24px}
+body{font-size:17px;background:var(--bg)}
+.wrap{max-width:1360px;padding-inline:clamp(18px,4vw,56px);padding-bottom:40px}
+header.top{padding:26px 0;border-bottom:1px solid var(--line);align-items:center}
+.brand h1{font-size:1.45rem;letter-spacing:-.04em}.brand p{font-size:.82rem}.brand svg{width:40px;height:40px}
+.header-actions{display:flex;align-items:center;gap:14px}.theme-btn{border:1px solid var(--line);background:var(--surface);color:var(--ink);border-radius:99px;padding:9px 15px;font:inherit;font-size:.82rem;cursor:pointer}
+.hero{display:grid;grid-template-columns:1.4fr 1fr;gap:36px;align-items:center;padding:44px 0 38px}
+.kicker{display:flex;align-items:center;gap:8px;font-size:.76rem;font-weight:700;text-transform:uppercase;letter-spacing:.12em;color:var(--accent)}.kicker::before{content:"";width:8px;height:8px;border-radius:50%;background:var(--accent)}
+.hero h2{font-size:clamp(2.5rem,5.4vw,4.5rem);letter-spacing:-.055em;line-height:1.03;margin:16px 0}.hero h2 em{color:var(--accent);font-style:normal}.hero p{color:var(--muted);max-width:48ch;margin:0 0 22px;font-size:1.05rem}.hero-meta{display:flex;flex-wrap:wrap;gap:10px 20px;font-size:.82rem;color:var(--muted);margin-top:20px}
+.hero-art{position:relative;max-width:440px;width:100%;justify-self:end}.hero-art svg{width:100%;height:auto}.art-caption{position:absolute;bottom:14px;left:20%;right:0;text-align:center;font-size:.8rem;color:var(--muted)}
+.progress{max-width:none;min-width:0;flex:none;background:var(--surface);border:1px solid var(--line);border-radius:16px;padding:18px 22px;margin:0 0 26px;display:grid;grid-template-columns:250px 1fr;align-items:center;gap:24px}.progress .lbl{margin:0;letter-spacing:0;text-transform:none;font-size:.9rem;color:var(--ink)}.bar{height:8px;background:var(--accent-soft)}.bar i{background:var(--accent)}
+.grid{grid-template-columns:300px minmax(0,1fr);gap:28px}.map-heading{display:flex;justify-content:space-between;align-items:center;padding:5px 4px 18px}.map-heading h2{font-size:1.15rem}.map-heading span{font-size:.75rem;color:var(--muted)}
+nav.map{border:0;background:transparent;padding:0 4px;scrollbar-width:thin}.map details{border:0;margin-bottom:10px;border-radius:16px;padding:10px;background:var(--surface-2)}.map details[open]{background:var(--surface);border:1px solid var(--line);padding:9px}.map summary{font-size:.95rem;align-items:flex-start;gap:10px;padding:7px 3px}.lvl-badge{background:var(--accent-soft);color:var(--accent);font-size:.7rem;padding:4px 7px}.level-sub{display:block;font:400 .74rem var(--f-body);color:var(--muted);margin-top:4px;line-height:1.4}.map ol{margin-top:10px;gap:4px}.map button.ls{padding:11px 8px;font-size:.88rem;line-height:1.45;border-radius:10px}.map button.ls[aria-current="true"]{color:var(--accent);background:var(--accent-soft)}.dot{width:22px;height:22px;font-family:var(--f-body);border-width:1px}.map .tools{padding:18px 6px;margin-top:20px}.map .tools label{align-items:flex-start}.map input{accent-color:var(--accent);margin-top:5px}
+main.lesson{padding:clamp(24px,4vw,48px);box-shadow:0 8px 35px #182e1c05;scroll-margin-top:20px}.eyebrow{color:var(--accent);font:700 .74rem var(--f-body);letter-spacing:.09em;display:flex;flex-wrap:wrap;justify-content:space-between;gap:8px}.reading-time{color:var(--muted);font-weight:400;letter-spacing:0;text-transform:none}main.lesson h2{font-size:clamp(1.9rem,3.4vw,2.8rem);letter-spacing:-.04em;margin:18px 0 12px}.lede{font-size:1.12rem;line-height:1.65}.learning-goal{display:flex;gap:12px;background:var(--accent-soft);border-radius:14px;padding:16px 20px;margin:22px 0 30px;font-size:.94rem}.learning-goal strong{display:block;color:var(--accent);font-size:.72rem;text-transform:uppercase;letter-spacing:.08em;margin-bottom:3px}.goal-icon{font-size:1.4rem;color:var(--accent)}
+.content{max-width:70ch}.content h3{font-size:1.3rem;margin-top:32px;letter-spacing:-.025em}.content p,.content li{line-height:1.75}.content figure{background:var(--surface-2);padding:18px;border-radius:16px}.note{border-radius:14px;padding:20px;border:0;border-left:3px solid var(--accent)}.note.key{border-left-color:var(--key)}.tablewrap{border-radius:14px}th,td{padding:14px}.steps li{padding-left:44px}.steps li::before{width:30px;height:30px;background:var(--accent-soft);color:var(--accent)}
+.check{border:1px solid var(--line);border-radius:18px;background:var(--surface-2);padding:24px;margin-top:36px}.check-label{color:var(--accent);font-size:.72rem;letter-spacing:.1em;text-transform:uppercase;font-weight:700;margin-bottom:10px}.check h3{font-size:1.35rem}.btn{border-radius:99px;padding:11px 21px;font-size:.93rem;border-width:1px;color:var(--surface);min-height:44px;transition:transform .15s,background .15s}.btn:hover:not(:disabled){transform:translateY(-1px);filter:none}.btn.ghost{color:var(--accent);background:var(--surface)}.btn.key{background:var(--accent);border-color:var(--accent);color:var(--surface)}.alt,.q,.done-banner,.wiz{border-radius:14px}.q{background:var(--surface);padding:20px}.q button.o{border-radius:10px;padding:13px 16px;min-height:48px}.fb{line-height:1.6}.pager{padding-top:22px;border-top:1px solid var(--line)}.pager .btn{font-size:.85rem;max-width:100%;text-align:left}.disclaimer-bar{margin:26px 0 0;background:transparent;border:0;padding:0;font-size:.78rem;color:var(--muted)}.site-foot{max-width:none;margin-top:24px;font-size:.8rem}.site-foot h2{font-size:.95rem}.site-foot p{max-width:100ch}.skip-link{position:absolute;top:-100px;left:20px;background:var(--surface);color:var(--accent);padding:12px;z-index:5}.skip-link:focus{top:12px}.mobile-map-toggle{display:none}
+@media(max-width:1000px){.grid{grid-template-columns:250px minmax(0,1fr);gap:18px}.hero{gap:16px}.brand p{max-width:35ch}}
+@media(max-width:760px){header.top{gap:14px;padding:20px 0}.brand p{display:none}.hero{grid-template-columns:1fr;padding:30px 0}.hero h2{font-size:clamp(2.6rem,9vw,3.7rem)}.hero-art{display:none}.hero p{font-size:1rem}.progress{grid-template-columns:1fr;gap:12px;padding:16px;margin-bottom:16px}.grid{grid-template-columns:minmax(0,1fr)}.mobile-map-toggle{display:flex;width:100%;justify-content:space-between;align-items:center;border:1px solid var(--line);border-radius:12px;background:var(--surface);color:var(--ink);padding:14px 18px;font:700 .92rem var(--f-body);margin-bottom:16px;cursor:pointer}nav.map{position:static;max-height:none}nav.map:not(.mobile-open){display:none}main.lesson{border-radius:18px}.check{padding:18px}.row .btn{width:100%}.eyebrow{font-size:.68rem}.header-actions{margin-left:auto}.theme-btn{font-size:.75rem;padding:8px 12px}.learning-goal{padding:14px}.content figure{padding:8px}.pager{gap:12px}.pager .btn{width:100%}.hero-meta{gap:8px 14px}}
+@media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}}
+
 </style>
 
+<a class="skip-link" href="#lesson">Hopp til leksjonen</a>
 <div class="wrap">
   <header class="top">
     <div class="brand">
@@ -165,19 +191,44 @@ main.lesson.anim{animation:rise .35s ease}
         <p>Passkeys for Windows 11-brukere i Microsoft 365, steg for steg</p>
       </div>
     </div>
-    <div class="progress" aria-live="polite">
-      <div class="lbl"><span>Din fremdrift</span><span id="progTxt">0 av 17</span></div>
-      <div class="bar"><i id="progBar"></i></div>
-    </div>
+    <div class="header-actions"><button class="theme-btn" id="themeToggle" aria-label="Bytt til mørkt tema">◐ Mørkt tema</button></div>
   </header>
-
-  <p class="disclaimer-bar" role="note"><b>Merk:</b> Dette er generell veiledning, ikke offisiell dokumentasjon fra Microsoft. Bruk av informasjonen skjer på eget ansvar. <a href="#ansvar">Les mer</a></p>
-
+  <section class="hero" aria-labelledby="hero-title">
+    <div>
+      <div class="kicker">Tryggere innlogging. Enklere hverdag.</div>
+      <h2 id="hero-title">En liten nøkkel.<br><em>En stor forskjell.</em></h2>
+      <p>Lær å logge inn uten passord. Vi tar deg fra «hva er en passkey?» til trygg bruk i Microsoft 365, ett enkelt steg om gangen.</p>
+      <button class="btn" id="continueCourse">Start læringen <span aria-hidden="true">↗</span></button>
+      <div class="hero-meta"><span>17 korte leksjoner</span><span>4 nivåer</span><span>I ditt eget tempo</span></div>
+    </div>
+    <div class="hero-art">
+      <svg viewBox="0 0 440 290" role="img" aria-label="En nøkkel åpner for trygg innlogging">
+        <ellipse cx="230" cy="145" rx="180" ry="126" fill="var(--accent-soft)"/>
+        <circle cx="230" cy="145" r="105" fill="none" stroke="var(--accent)" stroke-opacity=".15" stroke-dasharray="4 8"/>
+        <g transform="translate(100 72) rotate(-12 120 80)">
+          <rect width="240" height="155" rx="22" fill="var(--surface)" stroke="var(--line)" stroke-width="2"/>
+          <circle cx="24" cy="23" r="4" fill="var(--ok)"/><text x="38" y="28" fill="var(--muted)" font-size="12" font-family="Segoe UI, sans-serif">Sikker innlogging</text>
+          <circle cx="85" cy="83" r="24" fill="none" stroke="var(--accent)" stroke-width="12"/>
+          <path d="M108 83 H177 V103 M150 83 V99" fill="none" stroke="var(--accent)" stroke-width="12" stroke-linecap="round" stroke-linejoin="round"/>
+          <path d="M30 131 H110" stroke="var(--line)" stroke-width="5" stroke-linecap="round"/>
+        </g>
+        <g transform="translate(304 174)"><rect width="74" height="74" rx="24" fill="var(--accent)"/><path d="M22 37 L33 48 L53 27" fill="none" stroke="var(--surface)" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"/></g>
+        <path d="M68 60 V80 M58 70 H78 M362 54 V68 M355 61 H369" stroke="var(--key)" stroke-width="3" stroke-linecap="round"/>
+      </svg>
+      <span class="art-caption">Din enhet. Din nøkkel. Din kontroll.</span>
+    </div>
+  </section>
+  <div class="progress" aria-live="polite">
+    <div class="lbl"><span>Din læringsreise</span><span id="progTxt">0 av 17</span></div>
+    <div class="bar" role="progressbar" aria-label="Fullførte leksjoner" aria-valuemin="0" aria-valuemax="17" aria-valuenow="0"><i id="progBar"></i></div>
+  </div>
+  <button class="mobile-map-toggle" id="mapToggle" aria-expanded="false" aria-controls="map">Vis kurskart <span aria-hidden="true">＋</span></button>
   <div class="grid">
     <nav class="map" aria-label="Kurskart" id="map"></nav>
     <main class="lesson" id="lesson" tabindex="-1"></main>
   </div>
 
+  <p class="disclaimer-bar" role="note">Uavhengig læringsressurs for Windows 11 og Microsoft 365. Følg alltid organisasjonens retningslinjer. <a href="#ansvar">Om veiledningen</a></p>
   <footer class="site-foot" id="ansvar">
     <h2>Ansvarsfraskrivelse</h2>
     <p>Innholdet i Passkey-skolen er generell informasjon til opplæring. Det er ikke offisiell dokumentasjon fra Microsoft, Apple, Google eller andre leverandører, og det er ikke tilknyttet eller godkjent av dem.</p>
@@ -988,15 +1039,15 @@ if(idx(S.cur) < 0 || !unlocked(idx(S.cur))) S.cur = L[0].id;
 function renderMap(){
   const m = document.getElementById("map");
   const curLvl = L[idx(S.cur)].lvl;
-  m.innerHTML = LEVELS.map(lv => {
+  m.innerHTML = `<div class="map-heading"><h2>Kurskart</h2><span>Steg for steg</span></div>` + LEVELS.map(lv => {
     const items = L.map((x,i)=>({x,i})).filter(o=>o.x.lvl===lv.n);
     const nDone = items.filter(o=>S.done[o.x.id]).length;
     return `<details ${lv.n===curLvl?"open":""}>
-      <summary><span class="lvl-badge">NIVÅ ${lv.n}</span><span style="flex:1">${lv.name}</span><span class="mono" style="color:var(--muted);font-weight:400">${nDone}/${items.length}</span></summary>
+      <summary><span class="lvl-badge">NIVÅ ${lv.n}</span><span style="flex:1">${lv.name}<small class="level-sub">${lv.sub}</small></span><span class="mono" style="color:var(--muted);font-weight:400">${nDone}/${items.length}</span></summary>
       <ol>${items.map(({x,i}) => {
         const st = state(i);
         return `<li><button class="ls" data-id="${x.id}" data-state="${st}" aria-current="${x.id===S.cur}" ${st==="locked"?'aria-disabled="true" title="Fullfør forrige leksjon først"':""}>
-          <span class="dot">${st==="done"?"✓":st==="locked"?"🔒︎":""}</span><span>${x.title}</span></button></li>`;
+          <span class="dot">${st==="done"?"✓":st==="locked"?"·":i+1}</span><span>${x.title}</span></button></li>`;
       }).join("")}</ol></details>`;
   }).join("") + `<div class="tools">
       <label><input type="checkbox" id="allToggle" ${S.all?"checked":""}> Lås opp alle leksjoner (for IT / repetisjon)</label>
@@ -1014,10 +1065,18 @@ function renderMap(){
 
   const n = Object.keys(S.done).filter(k=>idx(k)>=0).length;
   document.getElementById("progTxt").textContent = `${n} av ${L.length} leksjoner`;
+  document.querySelector(".bar").setAttribute("aria-valuenow", n);
+  document.getElementById("continueCourse").innerHTML = `${n ? "Fortsett læringen" : "Start læringen"} <span aria-hidden="true">↗</span>`;
   document.getElementById("progBar").style.width = (n/L.length*100)+"%";
 }
 
-function go(id){ S.cur = id; save(); renderAll(true); }
+function go(id){
+  if(idx(id)<0 || !unlocked(idx(id))) return;
+  S.cur = id; save(); renderAll(true);
+  setMapOpen(false);
+  document.getElementById("lesson").focus({preventScroll:true});
+  document.getElementById("lesson").scrollIntoView({behavior:motion(),block:"start"});
+}
 
 function renderLesson(anim){
   const i = idx(S.cur), x = L[i], lv = LEVELS[x.lvl-1];
@@ -1025,14 +1084,36 @@ function renderLesson(anim){
   const posInLvl = L.filter(y=>y.lvl===x.lvl).findIndex(y=>y.id===x.id)+1;
   const totInLvl = L.filter(y=>y.lvl===x.lvl).length;
   const isDone = !!S.done[x.id];
+  const goals = {
+    hva:"Forklare hva en passkey er, og hvordan du bekrefter at det er deg.",
+    windows:"Kjenne igjen innlogging med passkey på Windows 11.",
+    hvorfor:"Forklare hvorfor passkeys beskytter mot falske innloggingssider.",
+    hello:"Forstå når Windows Hello på egen PC passer for deg.",
+    mobil:"Forstå hvordan mobilen brukes til innlogging på en annen enhet.",
+    authenticator:"Kjenne til passkeys i Microsoft Authenticator.",
+    nokkel:"Forstå hvordan en fysisk sikkerhetsnøkkel brukes.",
+    passord:"Skille mellom passkeys på én enhet og synkroniserte passkeys.",
+    sammenlign:"Sammenligne alternativene og finne en metode som passer din hverdag.",
+    whfb:"Skille mellom Windows Hello for Business og andre passkeys.",
+    registrer:"Kjenne rekkefølgen for å registrere en passkey på jobbkontoen.",
+    bytte:"Planlegge mobilbyttet uten å miste tilgangen til jobbkontoen.",
+    tapt:"Vite hva du gjør hvis mobilen eller sikkerhetsnøkkelen blir borte.",
+    policy:"Forstå hvordan IT styrer tillatte passkeys i Entra ID.",
+    ca:"Forstå hvordan autentiseringsstyrker brukes i Betinget tilgang.",
+    feil:"Finne mulige årsaker til vanlige innloggingsproblemer.",
+    utrulling:"Beskrive en trinnvis utrulling med pilot og brukeropplæring."
+  };
+  const minutes = Math.max(2, Math.ceil(x.body.replace(/<[^>]*>/g," ").split(/\s+/).length / 180));
   el.innerHTML = `
-    <div class="eyebrow">Nivå ${x.lvl} · ${lv.name} · Leksjon ${posInLvl} av ${totInLvl}</div>
+    <div class="eyebrow">Nivå ${x.lvl} · ${lv.name} · Leksjon ${posInLvl} av ${totInLvl}<span class="reading-time">Ca. ${minutes} min lesing · ${x.quiz.length} spørsmål</span></div>
     <h2>${x.title}</h2>
     <p class="lede">${x.lede}</p>
+    <div class="learning-goal"><span class="goal-icon" aria-hidden="true">◎</span><div><strong>Dette lærer du</strong>${goals[x.id]}</div></div>
     <div class="content">${x.body}</div>
     <section class="check" aria-labelledby="chk-h">
-      <h3 id="chk-h">Sjekkpunkt: har du forstått dette?</h3>
-      <p class="sub">Vær ærlig. Det er helt greit å be om en ny forklaring.</p>
+      <div class="check-label">Fra kunnskap til mestring</div>
+      <h3 id="chk-h">La oss se hva du har lært</h3>
+      <p class="sub">Svar på ${x.quiz.length} korte spørsmål for å åpne neste steg. Du kan prøve så mange ganger du vil.</p>
       <div class="row" id="chkBtns">
         <button class="btn" id="yes">Ja, test meg</button>
         <button class="btn ghost" id="alt">Forklar på en annen måte</button>
@@ -1050,7 +1131,7 @@ function renderLesson(anim){
   if(anim){ el.classList.remove("anim"); void el.offsetWidth; el.classList.add("anim"); }
 
   const quiz = el.querySelector("#quiz");
-  const startQuiz = () => { quiz.hidden = false; el.querySelector("#chkBtns").hidden = true; buildQuiz(x, quiz); quiz.scrollIntoView({behavior:"smooth", block:"start"}); };
+  const startQuiz = () => { quiz.hidden = false; el.querySelector("#chkBtns").hidden = true; buildQuiz(x, quiz); quiz.scrollIntoView({behavior:motion(), block:"start"}); };
   el.querySelector("#yes").onclick = startQuiz;
   el.querySelector("#yes2").onclick = () => { el.querySelector("#altBox").hidden = true; startQuiz(); };
   el.querySelector("#alt").onclick = () => { el.querySelector("#altBox").hidden = false; el.querySelector("#alt").hidden = true; };
@@ -1066,7 +1147,7 @@ function buildQuiz(x, box){
     <div class="q" data-qi="${qi}">
       <div class="qt">${qi+1}. ${q.q}</div>
       <div class="opts">${q.o.map((o,oi)=>`<button class="o" data-oi="${oi}">${o}</button>`).join("")}</div>
-      <div class="fb" hidden></div>
+      <div class="fb" role="status" hidden></div>
     </div>`).join("");
   box.querySelectorAll(".q").forEach(qel => {
     const qi = +qel.dataset.qi, q = x.quiz[qi], fb = qel.querySelector(".fb");
@@ -1134,6 +1215,32 @@ function initWizard(){
   f.addEventListener("change", upd); upd();
 }
 
-function renderAll(anim){ renderMap(); renderLesson(anim); if(anim){ const el=document.getElementById("lesson"); if(el.getBoundingClientRect().top<0) el.scrollIntoView({behavior:"smooth"}); } }
+function renderAll(anim){ renderMap(); renderLesson(anim); if(anim){ const el=document.getElementById("lesson"); if(el.getBoundingClientRect().top<0) el.scrollIntoView({behavior:motion()}); } }
+const motion = () => matchMedia("(prefers-reduced-motion: reduce)").matches ? "instant" : "smooth";
+function setMapOpen(open){
+  document.getElementById("map").classList.toggle("mobile-open",open);
+  const button=document.getElementById("mapToggle");
+  button.setAttribute("aria-expanded",String(open));
+  button.innerHTML=`${open ? "Skjul" : "Vis"} kurskart <span aria-hidden="true">${open ? "−" : "＋"}</span>`;
+}
+document.getElementById("mapToggle").onclick=()=>setMapOpen(!document.getElementById("map").classList.contains("mobile-open"));
+document.getElementById("continueCourse").onclick=()=>go(S.cur);
+const themeButton=document.getElementById("themeToggle");
+let theme;
+try{theme=localStorage.getItem("passkey-skolen-theme");}catch(e){}
+if(theme==="light" || theme==="dark") document.documentElement.dataset.theme=theme;
+function updateThemeButton(){
+  const dark=document.documentElement.dataset.theme === "dark" || (!document.documentElement.dataset.theme && matchMedia("(prefers-color-scheme: dark)").matches);
+  themeButton.textContent=dark ? "◐ Lyst tema" : "◐ Mørkt tema";
+  themeButton.setAttribute("aria-label",dark ? "Bytt til lyst tema" : "Bytt til mørkt tema");
+}
+themeButton.onclick=()=>{
+  const dark=themeButton.getAttribute("aria-label")==="Bytt til lyst tema";
+  document.documentElement.dataset.theme=dark ? "light" : "dark";
+  try{localStorage.setItem("passkey-skolen-theme",document.documentElement.dataset.theme);}catch(e){}
+  updateThemeButton();
+};
+matchMedia("(prefers-color-scheme: dark)").addEventListener("change",updateThemeButton);
+updateThemeButton();
 renderAll(false);
 </script>
